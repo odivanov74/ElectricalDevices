@@ -59,7 +59,95 @@ foreign key(deviceModel_id) references DeviceModels(deviceModel_id),
 foreign key(order_id) references orders(order_id),
 amount int
 );
+
+create table rights
+(
+right_id int not null primary key identity(1,1),
+right_name nvarchar(50) not null
+);
+
+
+create table users
+(
+user_id int not null primary key identity(1,1),
+user_name nvarchar(50) not null,
+user_login nvarchar(50) not null,
+user_password nvarchar(50) not null,
+phone nvarchar(50) not null,
+personal_discount int
+);
+
+create table userRight
+(
+user_id int,
+right_id int,
+primary key(user_id,right_id), 
+foreign key(user_id) references users(user_id),
+foreign key(right_id) references rights(right_id)
+);
+
 --=====================================================================================================
+insert into rights
+values
+--right_name
+('Add new user'),
+('Add new type product'),
+('Add new product'),
+('Add new manufacturer'),
+('Add new supplier'),
+('Edit user'),
+('Edit type product'),
+('Edit product'),
+('Edit manufacturer'),
+('Edit supplier'),
+('View users'),
+('View type product'),
+('View product'),
+('View manufacturer'),
+('View supplier'),
+('Delete users'),
+('Delete type product'),
+('Delete product'),
+('Delete manufacturer'),
+('Delete supplier')
+;
+
+insert into users
+values
+--user_name, user_login, user_password, phone, personal_discount
+('Owner', 'Admin', 'Admin', '+7(111)111-11-11', 0),
+('User1', 'user1', 'user1', '+7(222)222-22-22', 0);
+
+insert into userRight
+values
+--user_id, right_id
+(1, 1), --Add new user
+(1, 2), --Add new type product
+(1, 3), --Add new product
+(1, 4), --Add new manufacturer
+(1, 5), --Add new supplier
+(1, 6), --Edit user
+(1, 7), --Edit type product
+(1, 8), --Edit product
+(1, 9), --Edit manufacturer
+(1, 10), --Edit supplier
+(1, 11), --View users
+(1, 12), --View type product
+(1, 13), --View product
+(1, 14), --View manufacturer
+(1, 15), --View supplier
+(1, 16), --Delete users
+(1, 17), --Delete type product
+(1, 18), --Delete product
+(1, 19), --Delete manufacturer
+(1, 20), --Delete supplier
+(2, 12) --View type product
+;
+
+delete from userRight
+where userRight.user_id = 2;
+
+
 insert into countries
 values
 ('Russian Federation'),
@@ -139,8 +227,20 @@ select * from DeviceModels;
 select * from orders;
 select * from devices;
 select * from deviceOrder;
+select * from users;
+select * from rights;
+select * from userRight;
 
+delete from userRight
+where userRight.user_id = 3;
 --=====================================================================================================
+--вывести все права указанного пользователя
+select rights.right_id, right_name from rights
+inner join userRight as UR on rights.right_id = UR.right_id 
+inner join users on users.user_id = UR.user_id
+where users.user_name = 'Owner';
+
+
 --найти самый дорогой вид приборов
 select TOP 1 model_name, model_type, price from DeviceModels
 order by price desc;
@@ -211,3 +311,7 @@ group by price, model_name, model_type, manufacturers.manufacturer_name
 having price > (select avg(price) from DeviceModels
 				inner join manufacturers on DeviceModels.manufacturer_FK = manufacturers.manufacturer_id
 				where manufacturers.manufacturer_name = 'Bosch');
+
+Select deviceModel_id, model_name, model_type, weight, price, stock_balance, manufacturer_name, supplier_name  from deviceModels
+inner join manufacturers on manufacturers.manufacturer_id = manufacturer_FK
+inner join suppliers on suppliers.supplier_id = supplier_FK;

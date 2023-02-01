@@ -1,0 +1,14 @@
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\bin\Debug\ElectricalDevicesCW.exe.config
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\bin\Debug\ElectricalDevicesCW.exe
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\bin\Debug\ElectricalDevicesCW.pdb
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.csproj.AssemblyReference.cache
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Properties.Resources.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.csproj.GenerateResource.cache
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.csproj.CoreCompileInputs.cache
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.exe
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.pdb
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.LoginForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.MenuForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.ShopForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.UsersForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.RegistrationForm.resources
