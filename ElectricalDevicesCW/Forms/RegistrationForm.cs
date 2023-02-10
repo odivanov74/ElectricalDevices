@@ -11,24 +11,46 @@ using System.Windows.Forms;
 namespace ElectricalDevicesCW.Forms
 {
     public partial class RegistrationForm : Form
-    {
-        UserManager userManager;
-        public RegistrationForm(UserManager userManager)
+    {        
+        DataBaseService dataBaseService = new DataBaseService();
+
+        public RegistrationForm()
         {
-            InitializeComponent();
-            this.userManager = userManager;
+            InitializeComponent();            
         }
 
         private async void Registration_Button_Click(object sender, EventArgs e)
         {
             List<Right> rights = new List<Right>();
-            rights.Add(new Right(12, "View type product"));
+            rights.Add(new Right(9, "View deviceModel"));
             User newUser = new User(NameNewUser_TextBox.Text, LoginNewUser_TextBox.Text, PasswordNewUser_TextBox.Text, Phone_MaskedTextBox.Text, 0, rights);
-            if(await userManager.AddUserAsync(newUser)==false)
-            {
-                MessageBox.Show("Регистрация не выполнена, возможно такой пользователь уже есть");
+
+            int result = 0;
+            string strAddUser = await dataBaseService.AddUserAsync(newUser);
+            if (int.TryParse(strAddUser, out result) == true)
+            {                
+                string strReadUser = await dataBaseService.ReadUserTableAsync();
+                if (int.TryParse(strReadUser, out result) == true)
+                {
+                    string strUserRight = await dataBaseService.AddUserRightAsync(newUser);
+                    if (int.TryParse(strUserRight, out result) == false)
+                    {
+                        MessageBox.Show(strUserRight);
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(strReadUser);
+                    return;
+                }                
             }
-            else DialogResult = DialogResult.OK;
+            else
+            {
+                MessageBox.Show(strAddUser);
+                return;
+            }
+            DialogResult = DialogResult.OK;
         }
 
         private void Cancel_Button_Click(object sender, EventArgs e)
