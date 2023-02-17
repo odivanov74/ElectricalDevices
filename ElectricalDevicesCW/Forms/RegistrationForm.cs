@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElectricalDevicesCW.Managers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -21,21 +22,17 @@ namespace ElectricalDevicesCW.Forms
 
         private async void Registration_Button_Click(object sender, EventArgs e)
         {
-            List<Right> rights = new List<Right>();
-            rights.Add(new Right(9, "View deviceModel"));
-            User newUser = new User(NameNewUser_TextBox.Text, LoginNewUser_TextBox.Text, PasswordNewUser_TextBox.Text, Phone_MaskedTextBox.Text, 0, rights);
-
             int result = 0;
-            string strAddUser = await dataBaseService.AddUserAsync(newUser);
+            string strAddUser = await dataBaseService.AddUserAsync(Login_TextBox.Text, Password_TextBox.Text,"client");
             if (int.TryParse(strAddUser, out result) == true)
-            {                
+            {
                 string strReadUser = await dataBaseService.ReadUserTableAsync();
                 if (int.TryParse(strReadUser, out result) == true)
                 {
-                    string strUserRight = await dataBaseService.AddUserRightAsync(newUser);
-                    if (int.TryParse(strUserRight, out result) == false)
+                    string strClient = await dataBaseService.AddClientAsync(Name_TextBox.Text, Phone_MaskedTextBox.Text, 0, HumanDataManager.Instance.GetUserId(Login_TextBox.Text, Password_TextBox.Text));
+                    if (int.TryParse(strClient, out result) == false)
                     {
-                        MessageBox.Show(strUserRight);
+                        MessageBox.Show(strClient);
                         return;
                     }
                 }
@@ -43,7 +40,7 @@ namespace ElectricalDevicesCW.Forms
                 {
                     MessageBox.Show(strReadUser);
                     return;
-                }                
+                }
             }
             else
             {

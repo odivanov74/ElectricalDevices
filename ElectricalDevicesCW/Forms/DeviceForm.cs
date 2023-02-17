@@ -22,11 +22,10 @@ namespace ElectricalDevicesCW.Forms
             InitializeComponent();
             
             ManufactureDate_DateTimePicker.CustomFormat = "dd.MM.yyyy";
-            ManufactureDate_DateTimePicker.Format = DateTimePickerFormat.Custom;
-            OrderDate_DateTimePicker.CustomFormat = "dd.MM.yyyy";
-            OrderDate_DateTimePicker.Format = DateTimePickerFormat.Custom;
+            ManufactureDate_DateTimePicker.Format = DateTimePickerFormat.Custom;            
             OrderName_TextBox.Enabled = false;
-            OrderDate_DateTimePicker.Enabled = false;
+            BasketName_TextBox.Enabled = false;
+            NotDefected_RadioButton.Checked = true;
         }
 
         private void Devices_ListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -36,8 +35,9 @@ namespace ElectricalDevicesCW.Forms
             deviceSelectedId = int.Parse(str[0]);
             Model_ComboBox.SelectedIndex = int.Parse(str[1]) - 1;            
             SerialNumber_TextBox.Text = str[2];
-            ManufactureDate_DateTimePicker.Value = DeviceDataManager.Instance.GetDateManufactureDevice(deviceSelectedId);
-            if (DeviceDataManager.Instance.GetStatusDevice(deviceSelectedId) == true)
+            ManufactureDate_DateTimePicker.Value = ModelDataManager.Instance.GetDateManufactureDevice(deviceSelectedId);
+
+            if (ModelDataManager.Instance.GetStatusDefectDevice(deviceSelectedId) == true)
             {
                 IsDefected_RadioButton.Checked = true;
                 NotDefected_RadioButton.Checked = false;
@@ -47,9 +47,25 @@ namespace ElectricalDevicesCW.Forms
                 IsDefected_RadioButton.Checked = false;
                 NotDefected_RadioButton.Checked = true;
             }
-            
-            OrderName_TextBox.Text = str[5];
-            OrderDate_DateTimePicker.Value = DeviceDataManager.Instance.GetDateManufactureDevice(deviceSelectedId); //временно
+            //заказ
+            int result = 0;
+            if(int.TryParse(str[6],out result)==true)
+            {
+                OrderName_TextBox.Text = ShopDataManager.Instance.GetOrderName(result);                
+            }
+            else
+            {
+                OrderName_TextBox.Text = "";
+            }
+            //корзина
+            if (int.TryParse(str[7], out result) == true)
+            {
+                BasketName_TextBox.Text = ShopDataManager.Instance.GetOrderName(result);                
+            }
+            else
+            {
+                BasketName_TextBox.Text = "";
+            }            
         }
 
         private async void AddDevice_Button_Click(object sender, EventArgs e)
@@ -59,7 +75,7 @@ namespace ElectricalDevicesCW.Forms
             int result = 0;
             string str = await dataBaseService.AddDeviceAsync(  Model_ComboBox.SelectedIndex+1, 
                                                                 SerialNumber_TextBox.Text, 
-                                                                ManufactureDate_DateTimePicker.Value, 
+                                                                ManufactureDate_DateTimePicker.Value,                                                                
                                                                 IsDefected_RadioButton.Checked);
             if (int.TryParse(str, out result) == true)
             {
@@ -107,7 +123,7 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Devices_ListBox.Items.Clear();
-                DeviceDataManager.Instance.GetFullDataListDevice().ForEach(d => Devices_ListBox.Items.Add(d));                
+                ModelDataManager.Instance.GetFullDataListDevice().ForEach(d => Devices_ListBox.Items.Add(d));                
             }
             else MessageBox.Show(str);
         }
@@ -115,14 +131,21 @@ namespace ElectricalDevicesCW.Forms
         private async void DeviceForm_Load(object sender, EventArgs e)
         {
             int result = 0;
-            string str = await dataBaseService.ReadDeviceModelTableAsync();
+            string str = await dataBaseService.ReadModelTableAsync();
             if (int.TryParse(str, out result) == false)
             {
                 MessageBox.Show(str);
                 return;
             }
 
-            DeviceModelDataManager.Instance.GetNameListDeviceModel().ForEach(d => Model_ComboBox.Items.Add(d));
+            str = await dataBaseService.ReadOrderTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+
+            ModelDataManager.Instance.GetNameListModel().ForEach(d => Model_ComboBox.Items.Add(d));
             Model_ComboBox.SelectedIndex = 0;
             RefreshData();
         }

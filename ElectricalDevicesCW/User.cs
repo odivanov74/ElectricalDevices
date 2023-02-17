@@ -9,65 +9,24 @@ namespace ElectricalDevicesCW
 {
     public class User
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int Id { get; set; }        
         public string Login { get; set; }
         public string Password { get; set; }
-        public string Phone { get; set; }
-        public int PersonalDiscount { get; set; }
-        //public DataSet RightData { get; set; }
-        public List<Right> Rights { get; set; } = new List<Right>();
+        public string Role { get; set; }
 
-        public User(string name, string login, string password, string phone, int discount, List<Right> rights)
-        {            
-            Name = name;
+        public User(string login, string password, string role)
+        {
             Login = login;
             Password = password;
-            Phone = phone;
-            PersonalDiscount = discount;
-            Rights = rights;
+            Role = role;            
         }
 
-        public User(int id, string name, string login, string password, string phone, int discount, List<Right> rights)
+        public User(int id, string login, string password, string role)
         {
-            Id = id;
-            Name = name;
+            Id = id;            
             Login = login;
             Password = password;
-            Phone = phone;
-            PersonalDiscount = discount;
-            Rights = rights;
-        }
-
-        //public User(int id, string name, string login, string password, string phone, int discount, DataSet rightData)
-        //{
-        //    Id = id;
-        //    Name = name;
-        //    Login = login;
-        //    Password = password;
-        //    Phone = phone;
-        //    PersonalDiscount = discount;
-        //    RightData = rightData;
-        //} 
-        
-        public List<string> GetNameRights()
-        {
-            List<string> listNameRight = new List<string>();
-            for (int i = 0; i < Rights.Count; i++)
-            {
-                listNameRight.Add(Rights[i].Name);
-            }
-            return listNameRight;
-        }
-
-        public List<int> GetIdRights()
-        {
-            List<int> listIdRight = new List<int>();
-            for (int i = 0; i < Rights.Count; i++)
-            {
-                listIdRight.Add(Rights[i].Id);
-            }
-            return listIdRight;
+            Role = role;            
         }
     }
 }

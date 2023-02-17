@@ -31,12 +31,12 @@ namespace ElectricalDevicesCW.Forms
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.Country_ComboBox = new System.Windows.Forms.ComboBox();
+            this.DelManufacturer_Button = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.Edit_Button = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.AddManufacturer_Button = new System.Windows.Forms.Button();
             this.ManufacturerName_TextBox = new System.Windows.Forms.TextBox();
-            this.DelManufacturer_Button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.Manufacturer_ListBox = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
@@ -67,6 +67,16 @@ namespace ElectricalDevicesCW.Forms
             this.Country_ComboBox.Name = "Country_ComboBox";
             this.Country_ComboBox.Size = new System.Drawing.Size(224, 21);
             this.Country_ComboBox.TabIndex = 72;
+            // 
+            // DelManufacturer_Button
+            // 
+            this.DelManufacturer_Button.Location = new System.Drawing.Point(275, 181);
+            this.DelManufacturer_Button.Name = "DelManufacturer_Button";
+            this.DelManufacturer_Button.Size = new System.Drawing.Size(133, 39);
+            this.DelManufacturer_Button.TabIndex = 74;
+            this.DelManufacturer_Button.Text = "Удалить";
+            this.DelManufacturer_Button.UseVisualStyleBackColor = true;
+            this.DelManufacturer_Button.Click += new System.EventHandler(this.DelManufacturer_Button_Click);
             // 
             // label8
             // 
@@ -116,16 +126,6 @@ namespace ElectricalDevicesCW.Forms
             this.ManufacturerName_TextBox.Size = new System.Drawing.Size(224, 20);
             this.ManufacturerName_TextBox.TabIndex = 56;
             // 
-            // DelManufacturer_Button
-            // 
-            this.DelManufacturer_Button.Location = new System.Drawing.Point(275, 181);
-            this.DelManufacturer_Button.Name = "DelManufacturer_Button";
-            this.DelManufacturer_Button.Size = new System.Drawing.Size(133, 39);
-            this.DelManufacturer_Button.TabIndex = 74;
-            this.DelManufacturer_Button.Text = "Удалить";
-            this.DelManufacturer_Button.UseVisualStyleBackColor = true;
-            this.DelManufacturer_Button.Click += new System.EventHandler(this.DelManufacturer_Button_Click);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -154,6 +154,7 @@ namespace ElectricalDevicesCW.Forms
             this.Controls.Add(this.Manufacturer_ListBox);
             this.Name = "ManufacturerForm";
             this.Text = "ManufacturerForm";
+            this.Load += new System.EventHandler(this.ManufacturerForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

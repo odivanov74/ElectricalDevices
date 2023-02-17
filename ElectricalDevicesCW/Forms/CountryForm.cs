@@ -19,7 +19,7 @@ namespace ElectricalDevicesCW.Forms
         public CountryForm()
         {
             InitializeComponent();
-            RefreshScreenData();            
+            RefreshData();            
         }
 
         private async void Delete_Button_Click(object sender, EventArgs e)
@@ -29,7 +29,7 @@ namespace ElectricalDevicesCW.Forms
             string str = await dataBaseService.DeleteCountryAsync(Country_ListBox.SelectedItem.ToString());
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }
             else MessageBox.Show(str);
         }
@@ -42,7 +42,7 @@ namespace ElectricalDevicesCW.Forms
             
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }
             else MessageBox.Show(str);
         }
@@ -55,7 +55,7 @@ namespace ElectricalDevicesCW.Forms
             
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }                        
             else MessageBox.Show(str);
         }    
@@ -68,7 +68,7 @@ namespace ElectricalDevicesCW.Forms
             CountryName_TextBox.Text = str[1];
         }
 
-        public async void RefreshScreenData()
+        public async void RefreshData()
         {
             int result = 0;
             string str = "";          
@@ -77,10 +77,11 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Country_ListBox.Items.Clear();
-                CountryDataManager.Instance.GetFullDataListCounties().ForEach(m => Country_ListBox.Items.Add(m));
+                ModelDataManager.Instance.GetFullDataListCounties().ForEach(m => Country_ListBox.Items.Add(m));
                 CountryName_TextBox.Text = "";
             }
             else MessageBox.Show(str);
         }
+
     }
 }

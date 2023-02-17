@@ -12,10 +12,11 @@ D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Me
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.ShopForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.UsersForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.RegistrationForm.resources
-D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.DeviceModelForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.DeviceForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.ManufacturerForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.CountryForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.SupplierForm.resources
-D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.ModelTypeForm.resources
 D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.OrderForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.ModelForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.TypeForm.resources
+D:\oas\C#\ElectricalDevices\ElectricalDevicesCW\obj\Debug\ElectricalDevicesCW.Forms.BasketForm.resources

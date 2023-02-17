@@ -19,9 +19,6 @@ namespace ElectricalDevicesCW.Forms
         public ManufacturerForm()
         {
             InitializeComponent();
-            CountryDataManager.Instance.GetNameListCounties().ForEach(m => Country_ComboBox.Items.Add(m));
-            RefreshScreenData();
-
         }
 
         private void Manufacturer_ListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -79,11 +76,31 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Manufacturer_ListBox.Items.Clear();
-                ManufacturerDataManager.Instance.GetFullDataListManufacturers().ForEach(m => Manufacturer_ListBox.Items.Add(m));
+                ModelDataManager.Instance.GetFullDataListManufacturers().ForEach(m => Manufacturer_ListBox.Items.Add(m));
                 ManufacturerName_TextBox.Text = "";
                 if (Country_ComboBox.Items.Count > 0) Country_ComboBox.SelectedIndex = 0;
             }
             else MessageBox.Show(str);                 
+        }
+
+        private async void ManufacturerForm_Load(object sender, EventArgs e)
+        {
+            int result = 0;
+            string str = await dataBaseService.ReadCountryTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+
+            str = await dataBaseService.ReadManufacturerTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+            ModelDataManager.Instance.GetNameListCounties().ForEach(m => Country_ComboBox.Items.Add(m));
+            RefreshScreenData();
         }
     }
 }

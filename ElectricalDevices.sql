@@ -1,6 +1,6 @@
-create database ElectricalDevices_v7;
+create database ElectricalDevices_v8;
 
-use ElectricalDevices_v7;
+use ElectricalDevices_v8;
 
 create table countries
 (

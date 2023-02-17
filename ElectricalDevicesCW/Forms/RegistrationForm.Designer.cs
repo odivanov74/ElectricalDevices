@@ -29,25 +29,25 @@ namespace ElectricalDevicesCW.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.PasswordNewUser_TextBox = new System.Windows.Forms.TextBox();
+            this.Password_TextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.LoginNewUser_TextBox = new System.Windows.Forms.TextBox();
+            this.Login_TextBox = new System.Windows.Forms.TextBox();
             this.Phone_MaskedTextBox = new System.Windows.Forms.MaskedTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.NameNewUser_TextBox = new System.Windows.Forms.TextBox();
+            this.Name_TextBox = new System.Windows.Forms.TextBox();
             this.Registration_Button = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // PasswordNewUser_TextBox
+            // Password_TextBox
             // 
-            this.PasswordNewUser_TextBox.Location = new System.Drawing.Point(97, 59);
-            this.PasswordNewUser_TextBox.Margin = new System.Windows.Forms.Padding(2);
-            this.PasswordNewUser_TextBox.Name = "PasswordNewUser_TextBox";
-            this.PasswordNewUser_TextBox.Size = new System.Drawing.Size(205, 20);
-            this.PasswordNewUser_TextBox.TabIndex = 71;
+            this.Password_TextBox.Location = new System.Drawing.Point(97, 59);
+            this.Password_TextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.Password_TextBox.Name = "Password_TextBox";
+            this.Password_TextBox.Size = new System.Drawing.Size(205, 20);
+            this.Password_TextBox.TabIndex = 71;
             // 
             // label1
             // 
@@ -59,13 +59,13 @@ namespace ElectricalDevicesCW.Forms
             this.label1.TabIndex = 68;
             this.label1.Text = "Имя:";
             // 
-            // LoginNewUser_TextBox
+            // Login_TextBox
             // 
-            this.LoginNewUser_TextBox.Location = new System.Drawing.Point(97, 35);
-            this.LoginNewUser_TextBox.Margin = new System.Windows.Forms.Padding(2);
-            this.LoginNewUser_TextBox.Name = "LoginNewUser_TextBox";
-            this.LoginNewUser_TextBox.Size = new System.Drawing.Size(205, 20);
-            this.LoginNewUser_TextBox.TabIndex = 69;
+            this.Login_TextBox.Location = new System.Drawing.Point(97, 35);
+            this.Login_TextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.Login_TextBox.Name = "Login_TextBox";
+            this.Login_TextBox.Size = new System.Drawing.Size(205, 20);
+            this.Login_TextBox.TabIndex = 69;
             // 
             // Phone_MaskedTextBox
             // 
@@ -105,13 +105,13 @@ namespace ElectricalDevicesCW.Forms
             this.label4.TabIndex = 72;
             this.label4.Text = "Password:";
             // 
-            // NameNewUser_TextBox
+            // Name_TextBox
             // 
-            this.NameNewUser_TextBox.Location = new System.Drawing.Point(97, 11);
-            this.NameNewUser_TextBox.Margin = new System.Windows.Forms.Padding(2);
-            this.NameNewUser_TextBox.Name = "NameNewUser_TextBox";
-            this.NameNewUser_TextBox.Size = new System.Drawing.Size(205, 20);
-            this.NameNewUser_TextBox.TabIndex = 73;
+            this.Name_TextBox.Location = new System.Drawing.Point(97, 11);
+            this.Name_TextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.Name_TextBox.Name = "Name_TextBox";
+            this.Name_TextBox.Size = new System.Drawing.Size(205, 20);
+            this.Name_TextBox.TabIndex = 73;
             // 
             // Registration_Button
             // 
@@ -140,14 +140,14 @@ namespace ElectricalDevicesCW.Forms
             this.ClientSize = new System.Drawing.Size(323, 158);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.Registration_Button);
-            this.Controls.Add(this.PasswordNewUser_TextBox);
+            this.Controls.Add(this.Password_TextBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.LoginNewUser_TextBox);
+            this.Controls.Add(this.Login_TextBox);
             this.Controls.Add(this.Phone_MaskedTextBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.NameNewUser_TextBox);
+            this.Controls.Add(this.Name_TextBox);
             this.Name = "RegistrationForm";
             this.Text = "RegistrationForm";
             this.ResumeLayout(false);
@@ -157,14 +157,14 @@ namespace ElectricalDevicesCW.Forms
 
         #endregion
 
-        private System.Windows.Forms.TextBox PasswordNewUser_TextBox;
+        private System.Windows.Forms.TextBox Password_TextBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox LoginNewUser_TextBox;
+        private System.Windows.Forms.TextBox Login_TextBox;
         private System.Windows.Forms.MaskedTextBox Phone_MaskedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox NameNewUser_TextBox;
+        private System.Windows.Forms.TextBox Name_TextBox;
         private System.Windows.Forms.Button Registration_Button;
         private System.Windows.Forms.Button Cancel_Button;
     }

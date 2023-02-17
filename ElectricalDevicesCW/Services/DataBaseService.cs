@@ -12,297 +12,42 @@ namespace ElectricalDevicesCW
 {
     public class DataBaseService
     {
-        SqlConnection connection;        
+        SqlConnection connection;    
+
         SqlDataAdapter adapterCountry = new SqlDataAdapter();
         SqlDataAdapter adapterManufacturer = new SqlDataAdapter();
         SqlDataAdapter adapterSupplier = new SqlDataAdapter();
-        SqlDataAdapter adapterModelType = new SqlDataAdapter();
-        SqlDataAdapter adapterModelDevice = new SqlDataAdapter();
+        SqlDataAdapter adapterType = new SqlDataAdapter();
+        SqlDataAdapter adapterModel = new SqlDataAdapter();
         SqlDataAdapter adapterDevice = new SqlDataAdapter();
 
-        SqlDataAdapter adapterOrder = new SqlDataAdapter();
-        SqlDataAdapter adapterDeviceOrder = new SqlDataAdapter();
-
-        SqlDataAdapter adapterRight = new SqlDataAdapter();
-        SqlDataAdapter adapterUserRight = new SqlDataAdapter();
         SqlDataAdapter adapterUser = new SqlDataAdapter();
-        
+        SqlDataAdapter adapterClient = new SqlDataAdapter();
+        SqlDataAdapter adapterOrder = new SqlDataAdapter();
+        SqlDataAdapter adapterModelOrder = new SqlDataAdapter();
+        SqlDataAdapter adapterBasket = new SqlDataAdapter();
+        SqlDataAdapter adapterModelBasket = new SqlDataAdapter();
 
         SqlCommandBuilder commandBuilder; 
 
         public DataBaseService()
         {
-            connection = new SqlConnection(@"Data Source=DESKTOP-MHB46B8\SQLEXPRESS;Initial catalog=ElectricalDevices_v7;Integrated Security=true;");
-        }
+            connection = new SqlConnection(@"Data Source=DESKTOP-MHB46B8\SQLEXPRESS;Initial catalog=ElectricalDevices;Integrated Security=true;");
+        }               
 
-        public async Task<string> ReadUserTableAsync()
-        {
-            try
-            {
-                adapterUser = new SqlDataAdapter($"Select * from users;", connection);
-                commandBuilder = new SqlCommandBuilder(adapterUser);
-                UserDataManager.Instance.Users.Clear();
-                return (await Task.Run(() => adapterUser.Fill(UserDataManager.Instance.Users))).ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        public async Task<string> AddUserAsync(User user)
-        {
-            await ReadUserTableAsync();
-            if (AvailabilityСheck(UserDataManager.Instance.Users, "user_name", user.Name) == true || 
-                AvailabilityСheck(UserDataManager.Instance.Users, "user_login", user.Login) == true) return "Такой пользователь уже имеется в базе!";
-
-            string cmdInsertUser = $"insert into users values ('{user.Name}', '{user.Login}', '{user.Password}', '{user.Phone}', {user.PersonalDiscount});";
-
-            DataRow rowUsers = UserDataManager.Instance.Users.Tables[0].NewRow();
-            rowUsers["user_name"] = user.Name;
-            rowUsers["user_login"] = user.Login;
-            rowUsers["user_password"] = user.Password;
-            rowUsers["phone"] = user.Phone;
-            rowUsers["personal_discount"] = user.PersonalDiscount;
-            UserDataManager.Instance.Users.Tables[0].Rows.Add(rowUsers);
-
-            string outStr = "";
-            try
-            {
-                await Task.Run(() =>
-                {
-                    adapterUser.InsertCommand = new SqlCommand(cmdInsertUser, connection);
-                    outStr = (adapterUser.Update(UserDataManager.Instance.Users)).ToString();
-                });               
-            }
-            catch (Exception ex)
-            {
-                outStr = ex.Message;
-            }       
-            return outStr;
-        }
-
-        public async Task<string> UpdateUserAsync(User user)
-        {
-            await ReadUserTableAsync();
-            if (AvailabilityСheck(UserDataManager.Instance.Users, "user_name", user.Name) == true ||
-               AvailabilityСheck(UserDataManager.Instance.Users, "user_login", user.Login) == true) return "Такой пользователь уже имеется в базе!";
-
-            string cmd = $"update users set user_name ='{user.Name}'," +
-                                    $" user_login = '{user.Login}'," +
-                                    $" user_password = '{user.Password}'," +
-                                    $" phone = '{user.Phone}'," +
-                                    $" personal_discount = {user.PersonalDiscount}" +
-                                    $" where user_id = {user.Id};";
-            SqlCommand update = new SqlCommand(cmd, connection);
-
-            for (int i = 0; i < UserDataManager.Instance.Users.Tables[0].Rows.Count; i++)
-            {
-                if (UserDataManager.Instance.Users.Tables[0].Rows[i].Field<int>("user_id") == user.Id)
-                {
-                    UserDataManager.Instance.Users.Tables[0].Rows[i]["user_name"] = user.Name;
-                    UserDataManager.Instance.Users.Tables[0].Rows[i]["user_login"] = user.Login;
-                    UserDataManager.Instance.Users.Tables[0].Rows[i]["user_password"] = user.Password;
-                    UserDataManager.Instance.Users.Tables[0].Rows[i]["phone"] = user.Phone;
-                    UserDataManager.Instance.Users.Tables[0].Rows[i]["personal_discount"] = user.PersonalDiscount;
-                    break;
-                }
-            }
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    adapterUser.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterUser.Update(UserDataManager.Instance.Users)).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;
-        }
-
-        public async Task<string> DeleteUserAsync(string info)
-        {
-            string[] result = info.Split('.');
-            int id = int.Parse(result[0]);
-            await ReadUserTableAsync();
-
-            string cmdDel = $"delete from users where user_id ={id};";
-            SqlCommand delete = new SqlCommand(cmdDel, connection);
-
-            for (int i = 0; i < UserDataManager.Instance.Users.Tables[0].Rows.Count; i++)
-            {
-                if (UserDataManager.Instance.Users.Tables[0].Rows[i].Field<int>("user_id") == id)
-                {
-                    UserDataManager.Instance.Users.Tables[0].Rows[i].Delete();
-                    break;
-                }
-            }
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    adapterUser.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterUser.Update(UserDataManager.Instance.Users)).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;
-        }
-
-
-        public async Task<string> ReadRightTableAsync()
-        {
-            adapterRight = new SqlDataAdapter($"Select * from rights;", connection);
-            commandBuilder = new SqlCommandBuilder(adapterRight);
-            RightDataManager.Instance.Rights.Clear();
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    outStr = adapterRight.Fill(RightDataManager.Instance.Rights).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;
-        }
-
-
-        public async Task<string> ReadUserRightTableAsync()
-        {
-            adapterUserRight = new SqlDataAdapter($"Select * from userRight;", connection);
-            commandBuilder = new SqlCommandBuilder(adapterUserRight);
-            UserRightDataManager.Instance.UserRights.Clear();
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    outStr = adapterUserRight.Fill(UserRightDataManager.Instance.UserRights).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;
-        }
-
-        public async Task<string> AddUserRightAsync(User user)
-        {
-            string cmdInsert = "insert into userRight values ";
-            int userId = user.Id;
-            if(userId == 0) userId = UserDataManager.Instance.GetLastUserId();
-
-            for (int i = 0; i < user.Rights.Count; i++)
-            {
-                cmdInsert += $"({userId},{user.Rights[i].Id})";
-                if (i < user.Rights.Count - 1) cmdInsert += ",";
-            }
-            cmdInsert += ";";
-
-            for (int i = 0; i < user.Rights.Count; i++)
-            {
-                DataRow row = UserRightDataManager.Instance.UserRights.Tables[0].NewRow();
-                row["user_id"] = userId;
-                row["right_id"] = user.Rights[i].Id;
-                UserRightDataManager.Instance.UserRights.Tables[0].Rows.Add(row);
-            }
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    adapterUserRight.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterUserRight.Update(UserRightDataManager.Instance.UserRights)).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;           
-        }
-
-        public async Task<string> UpdateUserRightAsync(User user)
-        {
-            int result = 0;            
-            string deleteStr = await DeleteUserRightTableAsync(user);
-
-            if (int.TryParse(deleteStr, out result) == true)
-            {
-                string updateStr = await AddUserRightAsync(user);
-                if (int.TryParse(updateStr, out result) == true)
-                {
-                    return updateStr;
-                }
-                else return updateStr;
-            }
-            else return deleteStr;
-        }
-
-        public async Task<string> DeleteUserRightTableAsync(User user)
-        {
-            int id = user.Id;
-            await ReadUserRightTableAsync();          
-            
-            string cmdDel = $"delete from userRight where userRight.user_id ={id};";
-            SqlCommand delete = new SqlCommand(cmdDel, connection);
-
-            for (int i = 0; i < UserRightDataManager.Instance.UserRights.Tables[0].Rows.Count; i++)
-            {
-                if (UserRightDataManager.Instance.UserRights.Tables[0].Rows[i].Field<int>("user_id") == id)
-                {
-                    UserRightDataManager.Instance.UserRights.Tables[0].Rows[i].Delete();
-                    break;
-                }
-            }
-
-            string outStr = "";
-            await Task.Run(() =>
-            {
-                try
-                {
-                    adapterUserRight.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterUserRight.Update(UserRightDataManager.Instance.UserRights)).ToString();
-                }
-                catch (Exception ex)
-                {
-                    outStr = ex.Message;
-                }
-            });
-            return outStr;
-        }
-
-
+        #region сущность Country
         public async Task<string> ReadCountryTableAsync()
         {
             adapterCountry = new SqlDataAdapter($"Select * from countries;", connection);
             commandBuilder = new SqlCommandBuilder(adapterCountry);
-            CountryDataManager.Instance.Countries.Clear();           
+            ModelDataManager.Instance.Countries.Clear();           
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterCountry.Fill(CountryDataManager.Instance.Countries).ToString();
+                    outStr = adapterCountry.Fill(ModelDataManager.Instance.Countries).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -315,16 +60,16 @@ namespace ElectricalDevicesCW
         public async Task<string> UpdateCountryAsync(string name, int id)
         {
             await ReadCountryTableAsync();
-            if (AvailabilityСheck(CountryDataManager.Instance.Countries, "country_name", name) == true) return "Такая страна уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Countries, "country_name", name) == true) return "Такая страна уже имеется в базе!";
 
             string cmd = $"update countries set country_name ='{name}' where country_id = {id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < CountryDataManager.Instance.Countries.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Countries.Tables[0].Rows.Count; i++)
             {
-                if (CountryDataManager.Instance.Countries.Tables[0].Rows[i].Field<int>("country_id") == id)
+                if (ModelDataManager.Instance.Countries.Tables[0].Rows[i].Field<int>("country_id") == id)
                 {
-                    CountryDataManager.Instance.Countries.Tables[0].Rows[i]["country_name"] = name;
+                    ModelDataManager.Instance.Countries.Tables[0].Rows[i]["country_name"] = name;
                     break;
                 }
             }
@@ -335,7 +80,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterCountry.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterCountry.Update(CountryDataManager.Instance.Countries)).ToString();
+                    outStr = (adapterCountry.Update(ModelDataManager.Instance.Countries)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -348,12 +93,12 @@ namespace ElectricalDevicesCW
         public async Task<string> AddCountryAsync(string name)
         {
             await ReadCountryTableAsync();
-            if (AvailabilityСheck(CountryDataManager.Instance.Countries, "country_name", name) == true) return "Такая страна уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Countries, "country_name", name) == true) return "Такая страна уже имеется в базе!";
 
             string cmdInsert = $"insert into countries values ('{name}');";
-            DataRow row = CountryDataManager.Instance.Countries.Tables[0].NewRow();
+            DataRow row = ModelDataManager.Instance.Countries.Tables[0].NewRow();
             row["country_name"] = name;
-            CountryDataManager.Instance.Countries.Tables[0].Rows.Add(row);
+            ModelDataManager.Instance.Countries.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
@@ -361,7 +106,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterCountry.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterCountry.Update(CountryDataManager.Instance.Countries)).ToString();
+                    outStr = (adapterCountry.Update(ModelDataManager.Instance.Countries)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -380,11 +125,11 @@ namespace ElectricalDevicesCW
             string cmdDel = $"delete from countries where country_id ={id};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < CountryDataManager.Instance.Countries.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Countries.Tables[0].Rows.Count; i++)
             {
-                if (CountryDataManager.Instance.Countries.Tables[0].Rows[i].Field<int>("country_id") == id)
+                if (ModelDataManager.Instance.Countries.Tables[0].Rows[i].Field<int>("country_id") == id)
                 {
-                    CountryDataManager.Instance.Countries.Tables[0].Rows[i].Delete();
+                    ModelDataManager.Instance.Countries.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -395,7 +140,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterCountry.DeleteCommand = new SqlCommand(cmdDel, connection);                    
-                    outStr = (adapterCountry.Update(CountryDataManager.Instance.Countries)).ToString();
+                    outStr = (adapterCountry.Update(ModelDataManager.Instance.Countries)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -404,8 +149,9 @@ namespace ElectricalDevicesCW
             });
             return outStr;
         }
+        #endregion
 
-
+        #region сущность Manufacturer
         public async Task<string> ReadManufacturerTableAsync()
         {
             try
@@ -416,8 +162,8 @@ namespace ElectricalDevicesCW
                                                             "from manufacturers " +
                                                             "inner join countries on country_FK = countries.country_id;", connection);
                 commandBuilder = new SqlCommandBuilder(adapterManufacturer);
-                ManufacturerDataManager.Instance.Manufacturers.Clear();
-                return (await Task.Run(() => adapterManufacturer.Fill(ManufacturerDataManager.Instance.Manufacturers))).ToString();
+                ModelDataManager.Instance.Manufacturers.Clear();
+                return (await Task.Run(() => adapterManufacturer.Fill(ModelDataManager.Instance.Manufacturers))).ToString();
             }
             catch (Exception ex)
             {
@@ -428,19 +174,19 @@ namespace ElectricalDevicesCW
         public async Task<string> UpdateManufacturerAsync(string name, int country_id, int id)
         {
             await ReadManufacturerTableAsync();
-            if (AvailabilityСheck(ManufacturerDataManager.Instance.Manufacturers, "manufacturer_name", name) == true) return "Такой производитель уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Manufacturers, "manufacturer_name", name) == true) return "Такой производитель уже имеется в базе!";
 
             string cmd = $"update manufacturers set manufacturer_name ='{name}', " +
                                                     $"country_FK = {country_id} " +
                                                     $"where manufacturer_id = {id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Manufacturers.Tables[0].Rows.Count; i++)
             {
-                if (ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows[i].Field<int>("manufacturer_id") == id)
+                if (ModelDataManager.Instance.Manufacturers.Tables[0].Rows[i].Field<int>("manufacturer_id") == id)
                 {
-                    ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows[i]["manufacturer_name"] = name;
-                    ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows[i]["country_FK"] = country_id;
+                    ModelDataManager.Instance.Manufacturers.Tables[0].Rows[i]["manufacturer_name"] = name;
+                    ModelDataManager.Instance.Manufacturers.Tables[0].Rows[i]["country_FK"] = country_id;
                     break;
                 }
             }
@@ -451,7 +197,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterManufacturer.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterManufacturer.Update(ManufacturerDataManager.Instance.Manufacturers)).ToString();
+                    outStr = (adapterManufacturer.Update(ModelDataManager.Instance.Manufacturers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -464,13 +210,13 @@ namespace ElectricalDevicesCW
         public async Task<string> AddManufacturerAsync(string name, int country_id)
         {
             await ReadManufacturerTableAsync();
-            if (AvailabilityСheck(ManufacturerDataManager.Instance.Manufacturers, "manufacturer_name", name) == true) return "Такой производитель уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Manufacturers, "manufacturer_name", name) == true) return "Такой производитель уже имеется в базе!";
 
             string cmdInsert = $"insert into manufacturers values ('{name}',{country_id});";
-            DataRow row = ManufacturerDataManager.Instance.Manufacturers.Tables[0].NewRow();
+            DataRow row = ModelDataManager.Instance.Manufacturers.Tables[0].NewRow();
             row["manufacturer_name"] = name;
             row["country_FK"] = country_id;
-            ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows.Add(row);
+            ModelDataManager.Instance.Manufacturers.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
@@ -478,7 +224,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterManufacturer.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterManufacturer.Update(ManufacturerDataManager.Instance.Manufacturers)).ToString();
+                    outStr = (adapterManufacturer.Update(ModelDataManager.Instance.Manufacturers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -497,11 +243,11 @@ namespace ElectricalDevicesCW
             string cmdDel = $"delete from manufacturers where manufacturer_id ={id};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Manufacturers.Tables[0].Rows.Count; i++)
             {
-                if (ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows[i].Field<int>("manufacturer_id") == id)
+                if (ModelDataManager.Instance.Manufacturers.Tables[0].Rows[i].Field<int>("manufacturer_id") == id)
                 {
-                    ManufacturerDataManager.Instance.Manufacturers.Tables[0].Rows[i].Delete();
+                    ModelDataManager.Instance.Manufacturers.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -512,7 +258,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterManufacturer.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterManufacturer.Update(ManufacturerDataManager.Instance.Manufacturers)).ToString();
+                    outStr = (adapterManufacturer.Update(ModelDataManager.Instance.Manufacturers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -521,16 +267,17 @@ namespace ElectricalDevicesCW
             });
             return outStr;            
         }
+        #endregion
 
-
+        #region сущность Supplier
         public async Task<string> ReadSupplierTableAsync()
         {
             try
             {
                 adapterSupplier = new SqlDataAdapter($"Select * from suppliers;", connection);
                 commandBuilder = new SqlCommandBuilder(adapterSupplier);
-                SupplierDataManager.Instance.Suppliers.Clear();
-                return (await Task.Run(() => adapterSupplier.Fill(SupplierDataManager.Instance.Suppliers))).ToString();
+                ModelDataManager.Instance.Suppliers.Clear();
+                return (await Task.Run(() => adapterSupplier.Fill(ModelDataManager.Instance.Suppliers))).ToString();
             }
             catch (Exception ex)
             {
@@ -541,16 +288,16 @@ namespace ElectricalDevicesCW
         public async Task<string> UpdateSupplierAsync(string name, int id)
         {
             await ReadSupplierTableAsync();
-            if (AvailabilityСheck(SupplierDataManager.Instance.Suppliers, "supplier_name", name) == true) return "Такой поставщик уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Suppliers, "supplier_name", name) == true) return "Такой поставщик уже имеется в базе!";
 
             string cmd = $"update suppliers set supplier_name ='{name}' where supplier_id = {id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < SupplierDataManager.Instance.Suppliers.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Suppliers.Tables[0].Rows.Count; i++)
             {
-                if (SupplierDataManager.Instance.Suppliers.Tables[0].Rows[i].Field<int>("supplier_id") == id)
+                if (ModelDataManager.Instance.Suppliers.Tables[0].Rows[i].Field<int>("supplier_id") == id)
                 {
-                    SupplierDataManager.Instance.Suppliers.Tables[0].Rows[i]["supplier_name"] = name;
+                    ModelDataManager.Instance.Suppliers.Tables[0].Rows[i]["supplier_name"] = name;
                     break;
                 }
             }
@@ -561,7 +308,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterSupplier.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterSupplier.Update(SupplierDataManager.Instance.Suppliers)).ToString();
+                    outStr = (adapterSupplier.Update(ModelDataManager.Instance.Suppliers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -574,12 +321,12 @@ namespace ElectricalDevicesCW
         public async Task<string> AddSupplierAsync(string name)
         {
             await ReadSupplierTableAsync();
-            if (AvailabilityСheck(SupplierDataManager.Instance.Suppliers, "supplier_name", name) == true) return "Такой поставщик уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Suppliers, "supplier_name", name) == true) return "Такой поставщик уже имеется в базе!";
 
             string cmdInsert = $"insert into suppliers values ('{name}');";
-            DataRow row = SupplierDataManager.Instance.Suppliers.Tables[0].NewRow();
+            DataRow row = ModelDataManager.Instance.Suppliers.Tables[0].NewRow();
             row["supplier_name"] = name;
-            SupplierDataManager.Instance.Suppliers.Tables[0].Rows.Add(row);
+            ModelDataManager.Instance.Suppliers.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
@@ -587,7 +334,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterSupplier.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterSupplier.Update(SupplierDataManager.Instance.Suppliers)).ToString();
+                    outStr = (adapterSupplier.Update(ModelDataManager.Instance.Suppliers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -606,11 +353,11 @@ namespace ElectricalDevicesCW
             string cmdDel = $"delete from suppliers where supplier_id = {id};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < SupplierDataManager.Instance.Suppliers.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Suppliers.Tables[0].Rows.Count; i++)
             {
-                if (SupplierDataManager.Instance.Suppliers.Tables[0].Rows[i].Field<int>("supplier_id") == id)
+                if (ModelDataManager.Instance.Suppliers.Tables[0].Rows[i].Field<int>("supplier_id") == id)
                 {
-                    SupplierDataManager.Instance.Suppliers.Tables[0].Rows[i].Delete();
+                    ModelDataManager.Instance.Suppliers.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -621,7 +368,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterSupplier.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterSupplier.Update(SupplierDataManager.Instance.Suppliers)).ToString();
+                    outStr = (adapterSupplier.Update(ModelDataManager.Instance.Suppliers)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -630,25 +377,21 @@ namespace ElectricalDevicesCW
             });
             return outStr;
         }
+        #endregion
 
-
-
-        public async Task<string> ReadDeviceModelTableAsync()
+        #region сущность Model
+        public async Task<string> ReadModelTableAsync()
         {
-            adapterModelDevice = new SqlDataAdapter($"Select *  from deviceModels", connection);
-            //adapterModelDevice = new SqlDataAdapter($"Select deviceModel_id, model_name, modelType_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK  from deviceModels " +
-            //                                       $"inner join modelTypes on modelTypes.modelType_id = modelType_FK " +
-            //                                       $"inner join manufacturers on manufacturers.manufacturer_id = manufacturer_FK " +
-            //                                       $"inner join suppliers on suppliers.supplier_id = supplier_FK;", connection);
-            commandBuilder = new SqlCommandBuilder(adapterModelDevice);
-            DeviceModelDataManager.Instance.DeviceModels.Clear();
+            adapterModel = new SqlDataAdapter($"Select *  from models", connection);           
+            commandBuilder = new SqlCommandBuilder(adapterModel);
+            ModelDataManager.Instance.Models.Clear();
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterModelDevice.Fill(DeviceModelDataManager.Instance.DeviceModels).ToString();
+                    outStr = adapterModel.Fill(ModelDataManager.Instance.Models).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -658,36 +401,36 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> AddDeviceModelAsync(string deviceModel_name,
-                                                        int modelType_id,
+        public async Task<string> AddModelAsync(string model_name,
+                                                        int type_id,
                                                         int weight,
                                                         int price,
-                                                        int stock_balance,
                                                         int manufacturer_id,
                                                         int supplier_id)
         {
-            await ReadDeviceModelTableAsync();
-            if (AvailabilityСheck(DeviceModelDataManager.Instance.DeviceModels, "model_name", deviceModel_name) == true) return "Такая модель устройства уже имеется в базе!";
+            await ReadModelTableAsync();
+            if (AvailabilityСheck(ModelDataManager.Instance.Models, "model_name", model_name) == true) return "Такая модель устройства уже имеется в базе!";
 
-            string cmdInsert = $"insert into DeviceModels values ('{deviceModel_name}', {modelType_id}, {weight}, {price}, {stock_balance}, {manufacturer_id}, {supplier_id});";
+            string cmdInsert = $"insert into models values ('{model_name}', {type_id}, {weight}, {price}, 0, {manufacturer_id}, {supplier_id}, 0);";
 
-            DataRow row = DeviceModelDataManager.Instance.DeviceModels.Tables[0].NewRow();
-            row["model_name"] = deviceModel_name;
-            row["modelType_FK"] = modelType_id;
+            DataRow row = ModelDataManager.Instance.Models.Tables[0].NewRow();
+            row["model_name"] = model_name;
+            row["type_FK"] = type_id;
             row["weight"] = weight;
             row["price"] = price;
-            row["stock_balance"] = stock_balance;
+            row["stock_balance"] = 0;
             row["manufacturer_FK"] = manufacturer_id;
             row["supplier_FK"] = supplier_id;
-            DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows.Add(row);
+            row["reserved"] = 0;
+            ModelDataManager.Instance.Models.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    adapterModelDevice.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterModelDevice.Update(DeviceModelDataManager.Instance.DeviceModels)).ToString();
+                    adapterModel.InsertCommand = new SqlCommand(cmdInsert, connection);
+                    outStr = (adapterModel.Update(ModelDataManager.Instance.Models)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -697,37 +440,42 @@ namespace ElectricalDevicesCW
             return outStr;            
         }
 
-        public async Task<string> UpdateDeviceModelAsync(string deviceModel_name,
-                                                        int modelType_id,
+        public async Task<string> UpdateModelAsync(string model_name,
+                                                        int type_id,
                                                         int weight,
                                                         int price,
                                                         int stock_balance,
                                                         int manufacturer_id,
                                                         int supplier_id,
-                                                        int deviceModel_id)
+                                                        int reserved,
+                                                        int model_id)
         {
-            await ReadDeviceModelTableAsync();
-            if (AvailabilityСheck(DeviceModelDataManager.Instance.DeviceModels, "model_name", deviceModel_name) == true) return "Такая модель устройства уже имеется в базе!";
+            await ReadModelTableAsync();
+            if (AvailabilityСheck(ModelDataManager.Instance.Models, "model_name", model_name) == true) return "Такая модель устройства уже имеется в базе!";
 
-            string cmd = $"update DeviceModels set model_name ='{deviceModel_name}'," +
-                                    $" modelType_FK = {modelType_id}," +
+            string cmd = $"update models set model_name ='{model_name}'," +
+                                    $" type_FK = {type_id}," +
                                     $" weight = {weight}," +
-                                    $" price = {price}," +                                    
+                                    $" price = {price}," +
+                                    $" stock_balance = {stock_balance}," +
                                     $" manufacturer_FK = {manufacturer_id}," +
                                     $" supplier_FK = {supplier_id}" +
-                                    $" where deviceModel_id = {deviceModel_id};";
+                                    $" reserved = {reserved}," +
+                                    $" where model_id = {model_id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Models.Tables[0].Rows.Count; i++)
             {
-                if (DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i].Field<int>("deviceModel_id") == deviceModel_id)
+                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("deviceModel_id") == model_id)
                 {
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["model_name"] = deviceModel_name;
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["modelType_FK"] = modelType_id;
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["weight"] = weight;
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["price"] = price;
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["manufacturer_FK"] = manufacturer_id;
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i]["supplier_FK"] = supplier_id;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["model_name"] = model_name;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["type_FK"] = type_id;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["weight"] = weight;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["price"] = price;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["stock_balance"] = stock_balance;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["manufacturer_FK"] = manufacturer_id;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["supplier_FK"] = supplier_id;
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["reserved"] = reserved;
                     break;
                 }
             }
@@ -737,8 +485,8 @@ namespace ElectricalDevicesCW
             {
                 try
                 {
-                    adapterModelDevice.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterModelDevice.Update(DeviceModelDataManager.Instance.DeviceModels)).ToString();
+                    adapterModel.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterModel.Update(ModelDataManager.Instance.Models)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -748,20 +496,18 @@ namespace ElectricalDevicesCW
             return outStr;            
         }
 
-        public async Task<string> DeleteDeviceModelAsync(string info)
+        public async Task<string> UpdateStockBalanceModelAsync(int stock_balance, int model_id)
         {
-            string[] result = info.Split('.');
-            int id = int.Parse(result[0]);
-            await ReadDeviceModelTableAsync();
+            await ReadModelTableAsync();
 
-            string cmdDel = $"delete from deviceModels where deviceModel_id = {id};";
-            SqlCommand delete = new SqlCommand(cmdDel, connection);
+            string cmd = $"update models set stock_balance = {stock_balance} where model_id = {model_id};";
+            SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Models.Tables[0].Rows.Count; i++)
             {
-                if (DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i].Field<int>("deviceModel_id") == id)
-                {
-                    DeviceModelDataManager.Instance.DeviceModels.Tables[0].Rows[i].Delete();
+                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("model_id") == model_id)
+                {                    
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["stock_balance"] = stock_balance;                    
                     break;
                 }
             }
@@ -771,8 +517,8 @@ namespace ElectricalDevicesCW
             {
                 try
                 {
-                    adapterModelDevice.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterModelDevice.Update(DeviceModelDataManager.Instance.DeviceModels)).ToString();
+                    adapterModel.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterModel.Update(ModelDataManager.Instance.Models)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -782,19 +528,27 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-
-        public async Task<string> ReadDeviceTableAsync()
+        public async Task<string> UpdateReservedToModelAsync(int reserved, int model_id)
         {
-            adapterDevice = new SqlDataAdapter($"Select * from devices", connection);
-            commandBuilder = new SqlCommandBuilder(adapterDevice);
-            DeviceDataManager.Instance.Devices.Clear();
+            string cmd = $"update models set reserved = {reserved} where model_id = {model_id};";
+            SqlCommand update = new SqlCommand(cmd, connection);
+
+            for (int i = 0; i < ModelDataManager.Instance.Models.Tables[0].Rows.Count; i++)
+            {
+                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("model_id") == model_id)
+                {
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i]["reserved"] = reserved;
+                    break;
+                }
+            }
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterDevice.Fill(DeviceDataManager.Instance.Devices).ToString();
+                    adapterModel.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterModel.Update(ModelDataManager.Instance.Models)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -804,23 +558,128 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> AddDeviceAsync(int deviceModel_id, string serial_number, DateTime manufacture_date, bool isDefected)
+        public async Task<string> DeleteModelAsync(string info)
+        {
+            string[] result = info.Split('.');
+            int id = int.Parse(result[0]);
+            await ReadModelTableAsync();
+
+            string cmdDel = $"delete from models where model_id = {id};";
+            SqlCommand delete = new SqlCommand(cmdDel, connection);
+
+            for (int i = 0; i < ModelDataManager.Instance.Models.Tables[0].Rows.Count; i++)
+            {
+                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("model_id") == id)
+                {
+                    ModelDataManager.Instance.Models.Tables[0].Rows[i].Delete();
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterModel.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterModel.Update(ModelDataManager.Instance.Models)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        //сортировка
+        public async Task<string> SelectModelTableAsync(string orderBy, string direction, string Entity2 = null, string entityName2 = null, string Entity3 = null, string entityName3 = null)
+        {
+            string cmd = "Select * from models";
+
+            if(Entity2 != null)
+            {
+                cmd += $" inner join {Entity2} on {entityName2}_FK = {entityName2}_id";
+            }
+
+            if (Entity3 != null)
+            {
+                cmd += $" inner join {Entity3} on {entityName3}_FK = {entityName3}_id";
+            }
+
+            if (direction == "По убыванию")
+            {
+                cmd += $" order by {orderBy} desc;";
+            }
+            else
+            {
+                cmd += $" order by {orderBy} asc;";
+            }
+
+            adapterModel = new SqlDataAdapter(cmd, connection);
+            commandBuilder = new SqlCommandBuilder(adapterModel);
+            ModelDataManager.Instance.Models.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterModel.Fill(ModelDataManager.Instance.Models).ToString();                    
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+
+
+
+
+        #endregion
+
+        #region сущность Device
+        public async Task<string> ReadDeviceTableAsync()
+        {
+            adapterDevice = new SqlDataAdapter($"Select * from devices", connection);
+            commandBuilder = new SqlCommandBuilder(adapterDevice);
+            ModelDataManager.Instance.Devices.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterDevice.Fill(ModelDataManager.Instance.Devices).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> AddDeviceAsync(int model_id, string serial_number, DateTime manufacture_date, bool isDefected)
         {
             await ReadDeviceTableAsync();
-
-
-            if (AvailabilityСheck(DeviceDataManager.Instance.Devices, "serial_number", serial_number) == true) return "Такое устройство уже имеется в базе!";
+            if (AvailabilityСheck(ModelDataManager.Instance.Devices, "serial_number", serial_number) == true) return "Такое устройство уже имеется в базе!";
 
             int defect = 0;
             if (isDefected) defect = 1;
-            string cmdInsert = $"insert into devices values ({deviceModel_id}, '{serial_number}', '{manufacture_date}', {defect});";
+            string cmdInsert = $"insert into devices values ({model_id}, '{serial_number}', '{manufacture_date}', null, null, {defect});";
 
-            DataRow row = DeviceDataManager.Instance.Devices.Tables[0].NewRow();
-            row["deviceModel_FK"] = deviceModel_id;
+            DataRow row = ModelDataManager.Instance.Devices.Tables[0].NewRow();
+            row["model_FK"] = model_id;
             row["serial_number"] = serial_number;
             row["manufacture_date"] = manufacture_date;
-            row["isDefected"] = defect;            
-            DeviceDataManager.Instance.Devices.Tables[0].Rows.Add(row);
+            //row["order_FK"] = null;
+            //row["basket_FK"] = null;
+            row["isDefected"] = defect;
+            ModelDataManager.Instance.Devices.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
@@ -828,13 +687,21 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterDevice.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterDevice.Update(DeviceDataManager.Instance.Devices)).ToString();
+                    outStr = (adapterDevice.Update(ModelDataManager.Instance.Devices)).ToString();                    
                 }
                 catch (Exception ex)
                 {
                     outStr = ex.Message;
                 }
-            });
+            });            
+
+            int result = 0;            
+            if(int.TryParse(outStr, out result)==true)
+            {
+                await ReadModelTableAsync();
+                await UpdateStockBalanceModelAsync(ModelDataManager.Instance.GetStockBalance(model_id) + 1, model_id);
+            }         
+
             return outStr;
         }
 
@@ -845,21 +712,21 @@ namespace ElectricalDevicesCW
 
             int defect = 0;
             if (isDefected) defect = 1;
-            string cmd =    $"update devices set deviceModel_FK = {deviceModel_id}, " +
+            string cmd =    $"update devices set Model_FK = {deviceModel_id}, " +
                             $"serial_number ='{serial_number}', " +
                             $"manufacture_date ='{manufacture_date}', " +
                             $"isDefected = {defect} " +                            
                             $"where device_id = {device_id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < DeviceDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
             {
-                if (DeviceDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == device_id)
+                if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == device_id)
                 {
-                    DeviceDataManager.Instance.Devices.Tables[0].Rows[i]["deviceModel_FK"] = deviceModel_id;
-                    DeviceDataManager.Instance.Devices.Tables[0].Rows[i]["serial_number"] = serial_number;
-                    DeviceDataManager.Instance.Devices.Tables[0].Rows[i]["manufacture_date"] = manufacture_date;
-                    DeviceDataManager.Instance.Devices.Tables[0].Rows[i]["isDefected"] = defect;                    
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["Model_FK"] = deviceModel_id;
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["serial_number"] = serial_number;
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["manufacture_date"] = manufacture_date;
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["isDefected"] = defect;                    
                     break;
                 }
             }
@@ -870,7 +737,85 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterDevice.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterDevice.Update(DeviceDataManager.Instance.Devices)).ToString();
+                    outStr = (adapterDevice.Update(ModelDataManager.Instance.Devices)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> UpdateBasketFKToDeviceAsync(int? basket_id, int device_id)
+        {
+            await ReadDeviceTableAsync();
+            string cmd = "";
+            if (basket_id != null)
+            {
+                cmd = $"update devices set basket_FK = {basket_id} where device_id = {device_id};";
+                for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+                {
+                    if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == device_id)
+                    {
+                        ModelDataManager.Instance.Devices.Tables[0].Rows[i]["basket_FK"] = basket_id;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                cmd = $"update devices set basket_FK = null where device_id = {device_id};";
+                for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+                {
+                    if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == device_id)
+                    {
+                        ModelDataManager.Instance.Devices.Tables[0].Rows[i]["basket_FK"] = DBNull.Value;
+                        break;
+                    }
+                }
+            }
+            SqlCommand update = new SqlCommand(cmd, connection);            
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterDevice.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterDevice.Update(ModelDataManager.Instance.Devices)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> UpdateOrderFKToDeviceAsync(int order_id, int device_id)
+        {
+            await ReadDeviceTableAsync();
+            string cmd = "";
+            cmd = $"update devices set order_FK = {order_id}, basket_FK = null where device_id = {device_id};";
+            for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+            {
+                if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == device_id)
+                {
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["order_FK"] = order_id;
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i]["basket_FK"] = DBNull.Value;
+                    break;
+                }
+            }
+            SqlCommand update = new SqlCommand(cmd, connection);
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterDevice.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterDevice.Update(ModelDataManager.Instance.Devices)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -883,17 +828,19 @@ namespace ElectricalDevicesCW
         public async Task<string> DeleteDeviceAsync(string info)
         {
             string[] result = info.Split('.');
-            int id = int.Parse(result[0]);
+            int idDevice = int.Parse(result[0]);
             await ReadDeviceTableAsync();
+            await ReadModelTableAsync();
+            int idModel = ModelDataManager.Instance.GetModelId(idDevice);
 
-            string cmdDel = $"delete from devices where device_id = {id};";
+            string cmdDel = $"delete from devices where device_id = {idDevice};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < DeviceDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
             {
-                if (DeviceDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == id)
+                if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id") == idDevice)
                 {
-                    DeviceDataManager.Instance.Devices.Tables[0].Rows[i].Delete();
+                    ModelDataManager.Instance.Devices.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -904,29 +851,36 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterDevice.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterDevice.Update(DeviceDataManager.Instance.Devices)).ToString();
+                    outStr = (adapterDevice.Update(ModelDataManager.Instance.Devices)).ToString();
                 }
                 catch (Exception ex)
                 {
                     outStr = ex.Message;
                 }
             });
+
+            int res= 0;
+            if (int.TryParse(outStr, out res) == true)
+            { 
+                await UpdateStockBalanceModelAsync(ModelDataManager.Instance.GetStockBalance(idModel) - 1, idModel);
+            }
             return outStr;
         }
+        #endregion
 
-
-        public async Task<string> ReadModelTypeTableAsync()
+        #region сущность Type
+        public async Task<string> ReadTypeTableAsync()
         {
-            adapterModelType = new SqlDataAdapter($"Select * from modelTypes;", connection);
-            commandBuilder = new SqlCommandBuilder(adapterModelType);
-            ModelTypeDataManager.Instance.ModelTypes.Clear();
+            adapterType = new SqlDataAdapter($"Select * from types;", connection);
+            commandBuilder = new SqlCommandBuilder(adapterType);
+            ModelDataManager.Instance.Types.Clear();
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterModelType.Fill(ModelTypeDataManager.Instance.ModelTypes).ToString();
+                    outStr = adapterType.Fill(ModelDataManager.Instance.Types).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -936,19 +890,19 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> UpdateModelTypeAsync(string name, int id)
+        public async Task<string> UpdateTypeAsync(string name, int id)
         {
-            await ReadModelTypeTableAsync();
-            if (AvailabilityСheck(ModelTypeDataManager.Instance.ModelTypes, "modelType_name", name) == true) return "Такой тип уже имеется в базе!";
+            await ReadTypeTableAsync();
+            if (AvailabilityСheck(ModelDataManager.Instance.Types, "type_name", name) == true) return "Такой тип уже имеется в базе!";
 
-            string cmd = $"update modelTypes set modelType_name ='{name}' where modelType_id = {id};";
+            string cmd = $"update types set type_name ='{name}' where type_id = {id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Types.Tables[0].Rows.Count; i++)
             {
-                if (ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows[i].Field<int>("modelType_id") == id)
+                if (ModelDataManager.Instance.Types.Tables[0].Rows[i].Field<int>("type_id") == id)
                 {
-                    ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows[i]["modelType_name"] = name;
+                    ModelDataManager.Instance.Types.Tables[0].Rows[i]["type_name"] = name;
                     break;
                 }
             }
@@ -958,8 +912,8 @@ namespace ElectricalDevicesCW
             {
                 try
                 {
-                    adapterModelType.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterModelType.Update(ModelTypeDataManager.Instance.ModelTypes)).ToString();
+                    adapterType.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterType.Update(ModelDataManager.Instance.Types)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -969,23 +923,23 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> AddModelTypeAsync(string name)
+        public async Task<string> AddTypeAsync(string name)
         {
-            await ReadModelTypeTableAsync();
-            if (AvailabilityСheck(ModelTypeDataManager.Instance.ModelTypes, "modelType_name", name) == true) return "Такой тип уже имеется в базе!";
+            await ReadTypeTableAsync();
+            if (AvailabilityСheck(ModelDataManager.Instance.Types, "type_name", name) == true) return "Такой тип уже имеется в базе!";
 
-            string cmdInsert = $"insert into modelTypes values ('{name}');";
-            DataRow row = ModelTypeDataManager.Instance.ModelTypes.Tables[0].NewRow();
-            row["modelType_name"] = name;
-            ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows.Add(row);
+            string cmdInsert = $"insert into types values ('{name}');";
+            DataRow row = ModelDataManager.Instance.Types.Tables[0].NewRow();
+            row["type_name"] = name;
+            ModelDataManager.Instance.Types.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    adapterModelType.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterModelType.Update(ModelTypeDataManager.Instance.ModelTypes)).ToString();
+                    adapterType.InsertCommand = new SqlCommand(cmdInsert, connection);
+                    outStr = (adapterType.Update(ModelDataManager.Instance.Types)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -995,20 +949,20 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> DeleteModelTypeAsync(string info)
+        public async Task<string> DeleteTypeAsync(string info)
         {
             string[] result = info.Split('.');
             int id = int.Parse(result[0]);
-            await ReadModelTypeTableAsync();
+            await ReadTypeTableAsync();
 
-            string cmdDel = $"delete from modelTypes where modelType_id = {id};";
+            string cmdDel = $"delete from types where type_id = {id};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.Types.Tables[0].Rows.Count; i++)
             {
-                if (ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows[i].Field<int>("modelType_id") == id)
+                if (ModelDataManager.Instance.Types.Tables[0].Rows[i].Field<int>("type_id") == id)
                 {
-                    ModelTypeDataManager.Instance.ModelTypes.Tables[0].Rows[i].Delete();
+                    ModelDataManager.Instance.Types.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -1018,8 +972,92 @@ namespace ElectricalDevicesCW
             {
                 try
                 {
-                    adapterModelType.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterModelType.Update(ModelTypeDataManager.Instance.ModelTypes)).ToString();
+                    adapterType.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterType.Update(ModelDataManager.Instance.Types)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion
+
+        #region сущность User
+        public async Task<string> ReadUserTableAsync()
+        {
+            try
+            {
+                adapterUser = new SqlDataAdapter($"Select * from users;", connection);
+                commandBuilder = new SqlCommandBuilder(adapterUser);
+                HumanDataManager.Instance.Users.Clear();
+                return (await Task.Run(() => adapterUser.Fill(HumanDataManager.Instance.Users))).ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public async Task<string> AddUserAsync(string login, string password, string role)
+        {
+            await ReadUserTableAsync();
+            if (AvailabilityСheck(HumanDataManager.Instance.Users, "user_login", login) == true) return "Такой пользователь уже имеется в базе!";
+
+            string cmdInsertUser = $"insert into users values ('{login}', '{password}', '{role}');";
+
+            DataRow row = HumanDataManager.Instance.Users.Tables[0].NewRow();
+            row["user_login"] = login;
+            row["user_password"] = password;
+            row["role"] = role;
+            HumanDataManager.Instance.Users.Tables[0].Rows.Add(row);
+
+            string outStr = "";
+            try
+            {
+                await Task.Run(() =>
+                {
+                    adapterUser.InsertCommand = new SqlCommand(cmdInsertUser, connection);
+                    outStr = (adapterUser.Update(HumanDataManager.Instance.Users)).ToString();
+                });
+            }
+            catch (Exception ex)
+            {
+                outStr = ex.Message;
+            }
+            return outStr;
+        }
+
+        public async Task<string> UpdateUserAsync(int id, string login, string password, string role)
+        {
+            await ReadUserTableAsync();
+            //if (AvailabilityСheck(HumanDataManager.Instance.Users, "user_login", login) == true) return "Такой пользователь уже имеется в базе!";
+
+            string cmd = $"update users set user_login = '{login}'," +
+                                    $" user_password = '{password}'," +
+                                    $" role = '{role}'" +
+                                    $" where user_id = {id};";
+            SqlCommand update = new SqlCommand(cmd, connection);
+
+            for (int i = 0; i < HumanDataManager.Instance.Users.Tables[0].Rows.Count; i++)
+            {
+                if (HumanDataManager.Instance.Users.Tables[0].Rows[i].Field<int>("user_id") == id)
+                {
+                    HumanDataManager.Instance.Users.Tables[0].Rows[i]["user_login"] = login;
+                    HumanDataManager.Instance.Users.Tables[0].Rows[i]["user_password"] = password;
+                    HumanDataManager.Instance.Users.Tables[0].Rows[i]["role"] = role;
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterUser.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterUser.Update(HumanDataManager.Instance.Users)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -1029,19 +1067,363 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
+        public async Task<string> DeleteUserAsync(string info)
+        {
+            string[] result = info.Split('.');
+            int id = int.Parse(result[0]);
+            await ReadUserTableAsync();
 
+            string cmdDel = $"delete from users where user_id ={id};";
+            SqlCommand delete = new SqlCommand(cmdDel, connection);
+
+            for (int i = 0; i < HumanDataManager.Instance.Users.Tables[0].Rows.Count; i++)
+            {
+                if (HumanDataManager.Instance.Users.Tables[0].Rows[i].Field<int>("user_id") == id)
+                {
+                    HumanDataManager.Instance.Users.Tables[0].Rows[i].Delete();
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterUser.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterUser.Update(HumanDataManager.Instance.Users)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion 
+
+        #region сущность Client
+        public async Task<string> ReadClientTableAsync()
+        {
+            try
+            {
+                adapterClient = new SqlDataAdapter($"Select * from clients;", connection);
+                commandBuilder = new SqlCommandBuilder(adapterClient);
+                HumanDataManager.Instance.Clients.Clear();
+                return (await Task.Run(() => adapterClient.Fill(HumanDataManager.Instance.Clients))).ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public async Task<string> AddClientAsync(string name, string phone, int personal_discount, int userId)
+        {
+            await ReadClientTableAsync();
+            if (AvailabilityСheck(HumanDataManager.Instance.Clients, "client_name", name) == true || 
+                AvailabilityСheck(HumanDataManager.Instance.Clients, "phone", phone) == true ||
+                AvailabilityСheck(HumanDataManager.Instance.Clients, "user_FK", userId) == true) return "Такой клиент уже имеется в базе!";
+
+            string cmdInsert = $"insert into clients values ('{name}', '{phone}', {personal_discount}, {userId});";
+
+            DataRow row = HumanDataManager.Instance.Clients.Tables[0].NewRow();
+            row["client_name"] = name;
+            row["phone"] = phone;
+            row["personal_discount"] = personal_discount;
+            row["user_FK"] = userId;
+            HumanDataManager.Instance.Clients.Tables[0].Rows.Add(row);
+
+            string outStr = "";
+            int result = 0;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    adapterClient.InsertCommand = new SqlCommand(cmdInsert, connection);
+                    outStr = (adapterClient.Update(HumanDataManager.Instance.Clients)).ToString(); 
+                });
+            }
+            catch (Exception ex)
+            {
+                outStr = ex.Message;
+            }
+
+            if (int.TryParse(outStr, out result) == true)
+            {
+                outStr = await ReadClientTableAsync();
+                if (int.TryParse(outStr, out result) == true)
+                {
+                    outStr = await AddBasketAsync("корзина 1", HumanDataManager.Instance.GetClientId(userId));
+                }                    
+            }
+            return outStr;
+        }
+
+        public async Task<string> UpdateClientAsync(int id, string name, string phone, int personal_discount, int userId)
+        {
+            await ReadClientTableAsync();
+           
+            string cmd = $"update clients set client_name = '{name}'," +
+                                    $" phone = '{phone}'," +
+                                    $" personal_discount = {personal_discount}," +
+                                    $" user_FK = {userId}" +
+                                    $" where client_id = {id};";
+            SqlCommand update = new SqlCommand(cmd, connection);
+
+            for (int i = 0; i < HumanDataManager.Instance.Clients.Tables[0].Rows.Count; i++)
+            {
+                if (HumanDataManager.Instance.Clients.Tables[0].Rows[i].Field<int>("client_id") == id)
+                {
+                    HumanDataManager.Instance.Clients.Tables[0].Rows[i]["client_name"] = name;
+                    HumanDataManager.Instance.Clients.Tables[0].Rows[i]["phone"] = phone;
+                    HumanDataManager.Instance.Clients.Tables[0].Rows[i]["personal_discount"] = personal_discount;
+                    HumanDataManager.Instance.Clients.Tables[0].Rows[i]["user_FK"] = userId;
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterClient.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterClient.Update(HumanDataManager.Instance.Clients)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> DeleteClientAsync(string info)
+        {
+            string[] result = info.Split('.');
+            int id = int.Parse(result[0]);
+            await ReadClientTableAsync();
+
+            string cmdDel = $"delete from clients where client_id ={id};";
+            SqlCommand delete = new SqlCommand(cmdDel, connection);
+
+            for (int i = 0; i < HumanDataManager.Instance.Clients.Tables[0].Rows.Count; i++)
+            {
+                if (HumanDataManager.Instance.Clients.Tables[0].Rows[i].Field<int>("user_id") == id)
+                {
+                    HumanDataManager.Instance.Clients.Tables[0].Rows[i].Delete();
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterClient.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterClient.Update(HumanDataManager.Instance.Clients)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion
+
+        #region сущность Basket
+        public async Task<string> ReadBasketTableAsync()
+        {
+            try
+            {
+                adapterBasket = new SqlDataAdapter("Select * from baskets;", connection);
+                commandBuilder = new SqlCommandBuilder(adapterBasket);
+                ShopDataManager.Instance.Baskets.Clear();
+                return (await Task.Run(() => adapterBasket.Fill(ShopDataManager.Instance.Baskets))).ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public async Task<string> AddBasketAsync(string name, int idClient)
+        {
+            await ReadBasketTableAsync();
+            if (AvailabilityСheck(ShopDataManager.Instance.Baskets, "basket_name", name, "client_FK", idClient) == true) return "Такая корзина у этого клиента уже имеется в базе!";
+
+            string cmdInsert = $"insert into baskets values ('{name}',{idClient});";
+
+            DataRow row = ShopDataManager.Instance.Baskets.Tables[0].NewRow();
+            row["basket_name"] = idClient;
+            row["client_FK"] = idClient;
+            ShopDataManager.Instance.Baskets.Tables[0].Rows.Add(row);
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterBasket.InsertCommand = new SqlCommand(cmdInsert, connection);
+                    outStr = (adapterBasket.Update(ShopDataManager.Instance.Baskets)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });            
+            return outStr;
+        }
+
+        public async Task<string> AddModelToBasketAsync(int idModel, int countModel, int idBasket)
+        {
+            await ReadDeviceTableAsync();
+            int updateDevice = 0;
+            string str = "";
+            int result = 0;
+
+            if ((ModelDataManager.Instance.GetStockBalance(idModel) - ModelDataManager.Instance.GetNumReserved(idModel)) >= countModel)
+            {
+                for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+                {
+                    if(ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("Model_FK") == idModel &&
+                       ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int?>("basket_FK") == null &&
+                       ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int?>("order_FK") == null)
+                    {
+                        str = await UpdateBasketFKToDeviceAsync(idBasket, ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id"));
+                        if(int.TryParse(str,out result)==true)
+                        {
+                            updateDevice++;                            
+                            await UpdateReservedToModelAsync(ModelDataManager.Instance.GetNumReserved(idModel) + 1, idModel);
+                            await AddModelToModelBasketAsync(idModel, idBasket);
+                            if (updateDevice >= countModel) return str;
+                        }
+                        else
+                        {
+                            return str;
+                        }
+                    }
+                    
+                }
+                return updateDevice.ToString();
+            }
+            else
+            {
+                return "нет такого количества устройств в свободном остатке";
+            }           
+        }
+
+        public async Task<string> DecModelToBasketAsync(int idModel, int idBasket)
+        {
+            int result = 0;
+            string str = await ReadDeviceTableAsync();
+            if (int.TryParse(str, out result) == true)
+            {
+                for (int i = 0; i < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; i++)
+                {
+                    if (ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("Model_FK") == idModel &&
+                       ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int?>("basket_FK") == idBasket)
+                    {
+                        str = await UpdateBasketFKToDeviceAsync(null, ModelDataManager.Instance.Devices.Tables[0].Rows[i].Field<int>("device_id"));
+                        if (int.TryParse(str, out result) == true)
+                        {
+                            str = await UpdateReservedToModelAsync(ModelDataManager.Instance.GetNumReserved(idModel) - 1, idModel);
+                            if (int.TryParse(str, out result) == true)
+                            {
+                                str = await DecModelToModelBasketAsync(idModel, idBasket);
+                                break; //проходим цикл один раз до первого удаления
+                            }
+                        }
+                    }
+                }
+            }                
+            return str;
+        }
+
+        public async Task<string> UpdateBasketAsync(string name, int idClient, int idBasket)
+        {
+            await ReadBasketTableAsync();
+            if (AvailabilityСheck(ShopDataManager.Instance.Baskets, "basket_name", name, "client_FK", idClient) == true) return "Такая корзина у этого клиента уже имеется в базе!";
+
+            string cmd = $"update baskets set basket_name ='{name}' where basket_id = {idBasket};";
+            SqlCommand update = new SqlCommand(cmd, connection);
+
+            for (int i = 0; i < ShopDataManager.Instance.Baskets.Tables[0].Rows.Count; i++)
+            {
+                if (ShopDataManager.Instance.Baskets.Tables[0].Rows[i].Field<int>("basket_id") == idBasket)
+                {
+                    ShopDataManager.Instance.Baskets.Tables[0].Rows[i]["basket_name"] = name;
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterBasket.UpdateCommand = new SqlCommand(cmd, connection);
+                    outStr = (adapterBasket.Update(ShopDataManager.Instance.Baskets)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> DeleteBasketAsync(string info)
+        {
+            string[] result = info.Split('.');
+            int id = int.Parse(result[0]);
+            await ReadBasketTableAsync();
+
+            string cmdDel = $"delete from baskets where basket_id ={id};";
+            SqlCommand delete = new SqlCommand(cmdDel, connection);
+
+            for (int i = 0; i < ShopDataManager.Instance.Baskets.Tables[0].Rows.Count; i++)
+            {
+                if (ShopDataManager.Instance.Baskets.Tables[0].Rows[i].Field<int>("basket_id") == id)
+                {
+                    ShopDataManager.Instance.Baskets.Tables[0].Rows[i].Delete();
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterBasket.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterBasket.Update(ShopDataManager.Instance.Baskets)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion
+
+        #region сущность Order
         public async Task<string> ReadOrderTableAsync()
         {
             adapterOrder = new SqlDataAdapter($"Select * from orders;", connection);
             commandBuilder = new SqlCommandBuilder(adapterOrder);
-            OrderDataManager_.Instance.Orders.Clear();
+            ShopDataManager.Instance.Orders.Clear();
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterOrder.Fill(OrderDataManager_.Instance.Orders).ToString();
+                    outStr = adapterOrder.Fill(ShopDataManager.Instance.Orders).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -1051,24 +1433,22 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> UpdateOrderAsync(string name, DateTime order_date, DateTime shiping_date, int id)
+        public async Task<string> UpdateOrderAsync(string name, DateTime order_date, int id)
         {
             await ReadOrderTableAsync();
             //if (AvailabilityСheck(OrderDataManager_.Instance.Orders, "order_name", name) == true) return "Такой заказ уже имеется в базе!";
 
             string cmd =    $"update orders set order_name ='{name}', " +
-                            $"order_date = '{order_date}', " +
-                            $"shiping_date = '{shiping_date}' " +
+                            $"order_date = '{order_date}' " +                            
                             $"where order_id = {id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
-            for (int i = 0; i < OrderDataManager_.Instance.Orders.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ShopDataManager.Instance.Orders.Tables[0].Rows.Count; i++)
             {
-                if (OrderDataManager_.Instance.Orders.Tables[0].Rows[i].Field<int>("order_id") == id)
+                if (ShopDataManager.Instance.Orders.Tables[0].Rows[i].Field<int>("order_id") == id)
                 {
-                    OrderDataManager_.Instance.Orders.Tables[0].Rows[i]["order_name"] = name;
-                    OrderDataManager_.Instance.Orders.Tables[0].Rows[i]["order_date"] = order_date;
-                    OrderDataManager_.Instance.Orders.Tables[0].Rows[i]["shiping_date"] = shiping_date;
+                    ShopDataManager.Instance.Orders.Tables[0].Rows[i]["order_name"] = name;
+                    ShopDataManager.Instance.Orders.Tables[0].Rows[i]["order_date"] = order_date;                    
                     break;
                 }
             }
@@ -1079,7 +1459,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterOrder.UpdateCommand = new SqlCommand(cmd, connection);
-                    outStr = (adapterOrder.Update(OrderDataManager_.Instance.Orders)).ToString();
+                    outStr = (adapterOrder.Update(ShopDataManager.Instance.Orders)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -1089,18 +1469,19 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
-        public async Task<string> AddOrderAsync(string name, DateTime order_date, DateTime shiping_date)
+        public async Task<string> AddOrderAsync(int idClient)
         {
             await ReadOrderTableAsync();
-            if (AvailabilityСheck(OrderDataManager_.Instance.Orders, "order_name", name) == true) return "Такой заказ уже имеется в базе!";
+            string nameOrder = ShopDataManager.Instance.GenerateNewOrderName();
+            DateTime dateOrder = DateTime.Now;          
             
-            string cmdInsert = $"insert into orders values ('{name}', '{order_date}', '{shiping_date}');";
+            string cmdInsert = $"insert into orders values ('{nameOrder}', '{dateOrder.Date}', {idClient});";
 
-            DataRow row = OrderDataManager_.Instance.Orders.Tables[0].NewRow();
-            row["order_name"] = name;
-            row["order_date"] = order_date;
-            row["shiping_date"] = shiping_date;
-            OrderDataManager_.Instance.Orders.Tables[0].Rows.Add(row);
+            DataRow row = ShopDataManager.Instance.Orders.Tables[0].NewRow();
+            row["order_name"] = nameOrder;
+            row["order_date"] = dateOrder.Date;
+            row["client_FK"] = idClient;
+            ShopDataManager.Instance.Orders.Tables[0].Rows.Add(row);
 
             string outStr = "";
             await Task.Run(() =>
@@ -1108,13 +1489,18 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterOrder.InsertCommand = new SqlCommand(cmdInsert, connection);
-                    outStr = (adapterOrder.Update(OrderDataManager_.Instance.Orders)).ToString();
+                    outStr = (adapterOrder.Update(ShopDataManager.Instance.Orders)).ToString();
                 }
                 catch (Exception ex)
                 {
                     outStr = ex.Message;
                 }
             });
+
+            await ReadOrderTableAsync();
+
+
+
             return outStr;
         }
 
@@ -1127,11 +1513,11 @@ namespace ElectricalDevicesCW
             string cmdDel = $"delete from orders where order_id = {id};";
             SqlCommand delete = new SqlCommand(cmdDel, connection);
 
-            for (int i = 0; i < OrderDataManager_.Instance.Orders.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ShopDataManager.Instance.Orders.Tables[0].Rows.Count; i++)
             {
-                if (OrderDataManager_.Instance.Orders.Tables[0].Rows[i].Field<int>("order_id") == id)
+                if (ShopDataManager.Instance.Orders.Tables[0].Rows[i].Field<int>("order_id") == id)
                 {
-                    OrderDataManager_.Instance.Orders.Tables[0].Rows[i].Delete();
+                    ShopDataManager.Instance.Orders.Tables[0].Rows[i].Delete();
                     break;
                 }
             }
@@ -1142,7 +1528,7 @@ namespace ElectricalDevicesCW
                 try
                 {
                     adapterOrder.DeleteCommand = new SqlCommand(cmdDel, connection);
-                    outStr = (adapterOrder.Update(OrderDataManager_.Instance.Orders)).ToString();
+                    outStr = (adapterOrder.Update(ShopDataManager.Instance.Orders)).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -1150,21 +1536,82 @@ namespace ElectricalDevicesCW
                 }
             });
             return outStr;
+        }        
+
+        public async Task<string> AddModelsToNewOrderAsync(List<string> listModelToBasket, int idBasket, int idOrder)
+        {
+            
+            await ReadDeviceTableAsync();            
+            string str = "";
+            int result = 0;
+            int idModel = 0;
+            int idDevice = 0;
+            int amountModel = 0;
+            int k = 0;
+
+            for (int i = 0; i < listModelToBasket.Count; i++)
+            {
+                string[] aModel = listModelToBasket[i].Split('.');
+                idModel = int.Parse(aModel[0]);
+                amountModel = int.Parse(aModel[3]);
+
+
+                for (int j = 0; j < ModelDataManager.Instance.Devices.Tables[0].Rows.Count; j++)
+                {
+                    if (ModelDataManager.Instance.Devices.Tables[0].Rows[j].Field<int>("Model_FK") == idModel &&
+                      ModelDataManager.Instance.Devices.Tables[0].Rows[j].Field<int?>("basket_FK") == idBasket)
+                    {
+                        idDevice = ModelDataManager.Instance.Devices.Tables[0].Rows[j].Field<int>("device_id");
+                        str = await UpdateOrderFKToDeviceAsync(idOrder, idDevice);
+                        if (int.TryParse(str, out result) == false)
+                        {
+                            return str;
+                        }
+                        k++;
+                        if (k == amountModel) break;
+                    }
+                }
+                
+                str = await UpdateReservedToModelAsync(0, idModel);
+                if (int.TryParse(str, out result) == false)
+                {
+                    return str;
+                }
+                str = await UpdateStockBalanceModelAsync(ModelDataManager.Instance.GetStockBalance(idModel) - amountModel, idModel);
+                if (int.TryParse(str, out result) == false)
+                {
+                    return str;
+                }
+                str = await AddModelToModelOrderAsync(idModel, amountModel, idOrder);
+                if (int.TryParse(str, out result) == false)
+                {
+                    return str;
+                }
+                str = await DeleteModelFromModelBasketAsync(idModel, idBasket);
+                if (int.TryParse(str, out result) == false)
+                {
+                    return str;
+                }
+            }
+            return str;
         }
 
 
-        public async Task<string> ReadDeviceOrderTableAsync()
+        #endregion
+
+        #region ModelBasket
+        public async Task<string> ReadModelBasketTableAsync()
         {
-            adapterDeviceOrder = new SqlDataAdapter($"Select * from deviceOrder;", connection);
-            commandBuilder = new SqlCommandBuilder(adapterDeviceOrder);
-            DeviceOrderDataManager.Instance.DeviceOrders.Clear();
+            adapterModelBasket = new SqlDataAdapter($"Select * from modelBasket;", connection);
+            commandBuilder = new SqlCommandBuilder(adapterModelBasket);
+            ShopDataManager.Instance.ModelBasket.Clear();
 
             string outStr = "";
             await Task.Run(() =>
             {
                 try
                 {
-                    outStr = adapterDeviceOrder.Fill(DeviceOrderDataManager.Instance.DeviceOrders).ToString();
+                    outStr = adapterModelBasket.Fill(ShopDataManager.Instance.ModelBasket).ToString();
                 }
                 catch (Exception ex)
                 {
@@ -1174,11 +1621,215 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
+        public async Task<string> AddModelToModelBasketAsync(int idModel, int idBasket)
+        {
+            string outStr = "";
+            await ReadModelBasketTableAsync();
+            if (AvailabilityСheck(ShopDataManager.Instance.ModelBasket, "model_id", idModel) == true)
+            {
+                int numModel = ShopDataManager.Instance.GetNumModelToBasket(idModel);
+                string cmd = $"update modelbasket set amount = {numModel + 1} where model_id = {idModel} and basket_id = {idBasket};";
+                SqlCommand update = new SqlCommand(cmd, connection);
+
+                for (int i = 0; i < ShopDataManager.Instance.ModelBasket.Tables[0].Rows.Count; i++)
+                {
+                    if (ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i].Field<int>("model_id") == idModel)
+                    {
+                        ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i]["amount"] = numModel + 1;
+                        break;
+                    }
+                }
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        adapterModelBasket.UpdateCommand = new SqlCommand(cmd, connection);
+                        outStr = (adapterModelBasket.Update(ShopDataManager.Instance.ModelBasket)).ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        outStr = ex.Message;
+                    }
+                });
+            }
+            else
+            {
+                string cmdInsert = $"insert into modelbasket values ({idModel},{idBasket},1,1);";
+                DataRow row = ShopDataManager.Instance.ModelBasket.Tables[0].NewRow();
+                row["model_id"] = idModel;
+                row["basket_id"] = idBasket;
+                row["amount"] = 1;
+                row["instock"] = 1;
+                ShopDataManager.Instance.ModelBasket.Tables[0].Rows.Add(row);
+
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        adapterModelBasket.InsertCommand = new SqlCommand(cmdInsert, connection);
+                        outStr = (adapterModelBasket.Update(ShopDataManager.Instance.ModelBasket)).ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        outStr = ex.Message;
+                    }
+                });
+            }
+            return outStr;
+        }
+
+        public async Task<string> DecModelToModelBasketAsync(int idModel, int idBasket)
+        {
+            string outStr = "";
+            await ReadModelBasketTableAsync();
+            if (AvailabilityСheck(ShopDataManager.Instance.ModelBasket, "model_id", idModel) == false) return "нет такой модели в базе";
+            int numModel = ShopDataManager.Instance.GetNumModelToBasket(idModel);
+
+            if (numModel > 1)
+            {
+                string cmd = $"update modelbasket set amount = {numModel - 1} where model_id = {idModel} and basket_id = {idBasket};";
+                SqlCommand update = new SqlCommand(cmd, connection);
+
+                for (int i = 0; i < ShopDataManager.Instance.ModelBasket.Tables[0].Rows.Count; i++)
+                {
+                    if (ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i].Field<int>("model_id") == idModel)
+                    {
+                        ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i]["amount"] = numModel - 1;
+                        break;
+                    }
+                }
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        adapterModelBasket.UpdateCommand = new SqlCommand(cmd, connection);
+                        outStr = (adapterModelBasket.Update(ShopDataManager.Instance.ModelBasket)).ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        outStr = ex.Message;
+                    }
+                });
+            }
+            else //в корзине один экзепляр модели
+            {
+                outStr = await DeleteModelFromModelBasketAsync(idModel, idBasket);
+            }
+            return outStr;
+        }
+
+        public async Task<string> DeleteModelFromModelBasketAsync(int idModel, int idBasket)
+        {
+
+            await ReadModelBasketTableAsync();
+
+            string cmdDel = $"delete from modelbasket where model_id ={idModel};";
+            SqlCommand delete = new SqlCommand(cmdDel, connection);
+
+            for (int i = 0; i < ShopDataManager.Instance.ModelBasket.Tables[0].Rows.Count; i++)
+            {
+                if (ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i].Field<int>("model_id") == idModel)
+                {
+                    ShopDataManager.Instance.ModelBasket.Tables[0].Rows[i].Delete();
+                    break;
+                }
+            }
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterModelBasket.DeleteCommand = new SqlCommand(cmdDel, connection);
+                    outStr = (adapterModelBasket.Update(ShopDataManager.Instance.ModelBasket)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion
+
+        #region ModelOrder
+        public async Task<string> ReadModelOrderTableAsync()
+        {
+            adapterModelOrder = new SqlDataAdapter($"Select * from modelOrder;", connection);
+            commandBuilder = new SqlCommandBuilder(adapterModelOrder);
+            ShopDataManager.Instance.ModelOrder.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterModelOrder.Fill(ShopDataManager.Instance.ModelOrder).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> AddModelToModelOrderAsync(int idModel, int amountModel, int idOrder)
+        {
+            string outStr = "";
+            await ReadModelOrderTableAsync();
+            string cmdInsert = $"insert into modelOrder values ({idModel},{idOrder},{amountModel});";
+            DataRow row = ShopDataManager.Instance.ModelOrder.Tables[0].NewRow();
+            row["model_id"] = idModel;
+            row["order_id"] = idOrder;
+            row["amount"] = amountModel;
+            ShopDataManager.Instance.ModelOrder.Tables[0].Rows.Add(row);
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    adapterModelOrder.InsertCommand = new SqlCommand(cmdInsert, connection);
+                    outStr = (adapterModelOrder.Update(ShopDataManager.Instance.ModelOrder)).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+        #endregion
+
         public bool AvailabilityСheck(DataSet data, string field, string name)
         {
             for (int i = 0; i < data.Tables[0].Rows.Count; i++)
             {
                 if (data.Tables[0].Rows[i].Field<string>(field) == name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool AvailabilityСheck(DataSet data, string field, int value)
+        {
+            for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+            {
+                if (data.Tables[0].Rows[i].Field<int>(field) == value)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool AvailabilityСheck(DataSet data, string field1, string name, string field2, int value)
+        {
+            for (int i = 0; i < data.Tables[0].Rows.Count; i++)
+            {
+                if (data.Tables[0].Rows[i].Field<string>(field1) == name && data.Tables[0].Rows[i].Field<int>(field2) == value)
                 {
                     return true;
                 }

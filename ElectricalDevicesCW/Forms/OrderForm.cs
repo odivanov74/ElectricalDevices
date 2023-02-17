@@ -19,19 +19,21 @@ namespace ElectricalDevicesCW.Forms
         public OrderForm()
         {
             InitializeComponent();
+            Client_TextBox.Enabled = false;
+            Add_Button.Enabled = false;
         }
 
-        private async void Add_Button_Click(object sender, EventArgs e)
+        private void Add_Button_Click(object sender, EventArgs e)
         {
             //if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) OrderDataManager_.Instance.GenerateNewOrderName();
 
-            int result = 0;
-            string str = await dataBaseService.AddOrderAsync(OrderDataManager_.Instance.GenerateNewOrderName(), Order_DateTimePicker.Value, Shiping_DateTimePicker.Value);
-            if (int.TryParse(str, out result) == true)
-            {
-                RefreshData();
-            }
-            else MessageBox.Show(str);
+            //int result = 0;
+            //string str = await dataBaseService.AddOrderAsync(ShopDataManager.Instance.GenerateNewOrderName(), Order_DateTimePicker.Value);
+            //if (int.TryParse(str, out result) == true)
+            //{
+            //    RefreshData();
+            //}
+            //else MessageBox.Show(str);
         }
 
         private async void Edit_Button_Click(object sender, EventArgs e)
@@ -39,7 +41,7 @@ namespace ElectricalDevicesCW.Forms
             if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
 
             int result = 0;
-            string str = await dataBaseService.UpdateOrderAsync(Name_TextBox.Text, Order_DateTimePicker.Value, Shiping_DateTimePicker.Value, orderSelectedId);
+            string str = await dataBaseService.UpdateOrderAsync(Name_TextBox.Text, Order_DateTimePicker.Value, orderSelectedId);
             if (int.TryParse(str, out result) == true)
             {
                 RefreshData();
@@ -75,12 +77,13 @@ namespace ElectricalDevicesCW.Forms
             string[] str = Orders_ListBox.SelectedItem.ToString().Split('.');
             orderSelectedId = int.Parse(str[0]);
             Name_TextBox.Text = str[1];
-            Order_DateTimePicker.Value = OrderDataManager_.Instance.GetOrderDate(orderSelectedId);
-            Shiping_DateTimePicker.Value = OrderDataManager_.Instance.GetShipingDate(orderSelectedId);
+            Order_DateTimePicker.Value = ShopDataManager.Instance.GetOrderDate(orderSelectedId);
 
-            Devices_ListBox.Items.Clear();
-            DeviceOrderDataManager.Instance.GetDataListDevice(orderSelectedId).ForEach(d => Devices_ListBox.Items.Add(d));
-            Price_Label.Text = DeviceOrderDataManager.Instance.GetTotalCost(orderSelectedId).ToString();
+            Client_TextBox.Text = HumanDataManager.Instance.GetClientInfo(int.Parse(str[5]));
+
+            Model_ListBox.Items.Clear();
+            ShopDataManager.Instance.GetDataListModel(orderSelectedId).ForEach(m => Model_ListBox.Items.Add(m));
+            Price_Label.Text = ShopDataManager.Instance.GetTotalCost(orderSelectedId).ToString();
         }
 
         public async void RefreshData()
@@ -92,7 +95,7 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Orders_ListBox.Items.Clear();
-                OrderDataManager_.Instance.GetFullDataListOrder().ForEach(o => Orders_ListBox.Items.Add(o));
+                ShopDataManager.Instance.GetFullDataListOrder().ForEach(o => Orders_ListBox.Items.Add(o));
                 Name_TextBox.Text = "";
                 
             }
@@ -101,15 +104,9 @@ namespace ElectricalDevicesCW.Forms
 
         private async void OrderForm_Load(object sender, EventArgs e)
         {
-            int result = 0;
-            //string str = await dataBaseService.ReadOrderTableAsync();
-            //if (int.TryParse(str, out result) == false)
-            //{
-            //    MessageBox.Show(str);
-            //    return;
-            //}
+            int result = 0;            
 
-            string str = await dataBaseService.ReadDeviceOrderTableAsync();
+            string str = await dataBaseService.ReadModelOrderTableAsync();
             if (int.TryParse(str, out result) == false)
             {
                 MessageBox.Show(str);
@@ -123,14 +120,28 @@ namespace ElectricalDevicesCW.Forms
                 return;
             }
 
-            str = await dataBaseService.ReadModelTypeTableAsync();
+            str = await dataBaseService.ReadTypeTableAsync();
             if (int.TryParse(str, out result) == false)
             {
                 MessageBox.Show(str);
                 return;
             }
 
-            str = await dataBaseService.ReadDeviceModelTableAsync();
+            str = await dataBaseService.ReadModelTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+
+            str = await dataBaseService.ReadManufacturerTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+
+            str = await dataBaseService.ReadClientTableAsync();
             if (int.TryParse(str, out result) == false)
             {
                 MessageBox.Show(str);

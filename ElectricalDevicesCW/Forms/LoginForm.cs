@@ -14,8 +14,7 @@ using System.Windows.Forms;
 namespace ElectricalDevicesCW
 {
     public partial class LoginForm : Form
-    {
-        SqlConnection connection;
+    {        
         DataBaseService dataBaseService = new DataBaseService();
 
         ShopForm shopForm;
@@ -24,22 +23,21 @@ namespace ElectricalDevicesCW
 
         public LoginForm()
         {
-            InitializeComponent();
-            //connection = new SqlConnection(@"Data Source=DESKTOP-MHB46B8\SQLEXPRESS;Initial catalog=ElectricalDevices_v7;Integrated Security=true;");
-
+            InitializeComponent(); 
         }        
 
         private void Login_button_Click(object sender, EventArgs e)
         {
-            User user = UserDataManager.Instance.GetUser(LoginInput_textBox.Text, PasswordInput_textBox.Text);
+            User user = HumanDataManager.Instance.GetUser(LoginInput_textBox.Text, PasswordInput_textBox.Text);
             if (user == null)
             {
                 MessageBox.Show("Неверный login или password, повторите ввод!");
                 return;
             }
-            else if(user.Rights.Count==1 && user.Rights[0].Name == "View deviceModel")
-            {               
-                shopForm = new ShopForm(user);
+
+            if(user.Role=="client")
+            {                
+                shopForm = new ShopForm(HumanDataManager.Instance.GetClient(user.Id));
                 shopForm.StartPosition = FormStartPosition.Manual;
                 shopForm.Location = new Point(Location.X,Location.Y);
                 if(shopForm.ShowDialog() == DialogResult.OK)
@@ -47,7 +45,7 @@ namespace ElectricalDevicesCW
                     
                 }
             }
-            else
+            else if (user.Role == "administrator" || user.Role == "manager")
             {                
                 menuForm = new MenuForm(user);
                 menuForm.StartPosition = FormStartPosition.Manual;
@@ -86,15 +84,8 @@ namespace ElectricalDevicesCW
                 MessageBox.Show(str);
                 return;
             }
-
-            str = await dataBaseService.ReadUserRightTableAsync();
-            if (int.TryParse(str, out result) == false)
-            {
-                MessageBox.Show(str);
-                return;
-            }
-
-            str = await dataBaseService.ReadRightTableAsync();
+            
+            str = await dataBaseService.ReadClientTableAsync();
             if (int.TryParse(str, out result) == false)
             {
                 MessageBox.Show(str);

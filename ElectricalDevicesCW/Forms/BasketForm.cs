@@ -11,77 +11,83 @@ using System.Windows.Forms;
 
 namespace ElectricalDevicesCW.Forms
 {
-    public partial class ModelTypeForm : Form
+    public partial class BasketForm : Form
     {
         DataBaseService dataBaseService = new DataBaseService();
-        int modelTypeSelectedId = 0;
+        int basketSelectedId = 0;
+        Client client;
 
-        public ModelTypeForm()
+        public BasketForm(Client client)
         {
             InitializeComponent();
-            RefreshScreenData();
+            this.client = client;
+            RefreshData();
         }
 
         private async void Add_Button_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
-
             int result = 0;
-            string str = await dataBaseService.AddModelTypeAsync(Name_TextBox.Text);
+            if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
+            string str = await dataBaseService.AddBasketAsync(Name_TextBox.Text, client.Id);
+
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }
             else MessageBox.Show(str);
         }
 
         private async void Edit_Button_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
-
             int result = 0;
-            string str = await dataBaseService.UpdateModelTypeAsync(Name_TextBox.Text, modelTypeSelectedId);
+            if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
+            string str = await dataBaseService.UpdateBasketAsync(Name_TextBox.Text, client.Id, basketSelectedId);
+
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }
             else MessageBox.Show(str);
         }
 
         private async void Delete_Button_Click(object sender, EventArgs e)
         {
-            if (Type_ListBox.SelectedItem == null) return;
-
+            if (Basket_ListBox.SelectedItem == null || Basket_ListBox.Items.Count == 1) return;
             int result = 0;
-            string str = await dataBaseService.DeleteModelTypeAsync(Type_ListBox.SelectedItem.ToString());
+            string str = await dataBaseService.DeleteBasketAsync(Basket_ListBox.SelectedItem.ToString());
             if (int.TryParse(str, out result) == true)
             {
-                RefreshScreenData();
+                RefreshData();
             }
             else MessageBox.Show(str);
         }
 
-        private void Type_ListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void Basket_ListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Type_ListBox.SelectedItem == null) return;
-            string[] str = Type_ListBox.SelectedItem.ToString().Split('.');
-            modelTypeSelectedId = int.Parse(str[0]);
+            if (Basket_ListBox.SelectedItem == null) return;
+            string[] str = Basket_ListBox.SelectedItem.ToString().Split('.');
+            basketSelectedId = int.Parse(str[0]);
             Name_TextBox.Text = str[1];
         }
 
-        public async void RefreshScreenData()
+        public async void RefreshData()
         {
             int result = 0;
             string str = "";
-            str = await dataBaseService.ReadModelTypeTableAsync();
+            str = await dataBaseService.ReadBasketTableAsync();
 
             if (int.TryParse(str, out result) == true)
             {
-                Type_ListBox.Items.Clear();
-                ModelTypeDataManager.Instance.GetFullDataListModelTypes().ForEach(s => Type_ListBox.Items.Add(s));
+                Basket_ListBox.Items.Clear();
+                ShopDataManager.Instance.GetFullListBasket(client.Id).ForEach(b => Basket_ListBox.Items.Add(b));
                 Name_TextBox.Text = "";
             }
             else MessageBox.Show(str);
+        }
+
+        private void BasketForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            DialogResult = DialogResult.OK;
         }
     }
 }

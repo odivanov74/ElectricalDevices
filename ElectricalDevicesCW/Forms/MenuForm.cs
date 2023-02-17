@@ -14,17 +14,16 @@ using System.Windows.Forms;
 namespace ElectricalDevicesCW
 {
     public partial class MenuForm : Form
-    {
-        //SqlConnection connection;
+    {        
         User user;
         DataBaseService dataBaseService = new DataBaseService();
         UsersForm usersForm;        
-        DeviceModelForm deviceModelForm;
+        ModelForm deviceModelForm;
         DeviceForm deviceForm;
         ManufacturerForm manufacturerForm;
         CountryForm countryForm;
         SupplierForm supplierForm;
-        ModelTypeForm modelTypeForm;
+        TypeForm TypeForm;
         OrderForm orderForm;
 
         public MenuForm(User user)
@@ -32,29 +31,24 @@ namespace ElectricalDevicesCW
             InitializeComponent();
             this.user = user;
 
-            List<string> listRight = user.GetNameRights();
-            if (listRight.Contains("Add user") || listRight.Contains("Edit user") || listRight.Contains("View user") || listRight.Contains("Delete user"))
+            Table_ComboBox.Items.Add("Types");
+            Table_ComboBox.Items.Add("Models");
+            Table_ComboBox.Items.Add("Devices");
+            Table_ComboBox.Items.Add("Manufacturers");
+            Table_ComboBox.Items.Add("Suppliers");
+            Table_ComboBox.Items.Add("Countries");
+            Table_ComboBox.Items.Add("Orders");
+
+            if (user.Role == "administrator")
+            {
                 Table_ComboBox.Items.Add("Users");
-            if (listRight.Contains("View modelType") || listRight.Contains("Edit modelType") || listRight.Contains("Add modelType") || listRight.Contains("Delete modelType"))
-                Table_ComboBox.Items.Add("ModelTypes");
-            if (listRight.Contains("View deviceModel") || listRight.Contains("Add deviceModel") || listRight.Contains("Edit deviceModel") || listRight.Contains("Delete deviceModel"))
-                Table_ComboBox.Items.Add("DeviceModels");
-            if (listRight.Contains("View device") || listRight.Contains("Add device") || listRight.Contains("Edit device") || listRight.Contains("Delete device"))
-                Table_ComboBox.Items.Add("Devices");
-            if (listRight.Contains("Add manufacturer") || listRight.Contains("Edit manufacturer") || listRight.Contains("View manufacturer") || listRight.Contains("Delete manufacturer"))
-                Table_ComboBox.Items.Add("Manufacturers");
-            if (listRight.Contains("Add supplier") || listRight.Contains("Edit supplier") || listRight.Contains("View supplier") || listRight.Contains("Delete supplier"))
-                Table_ComboBox.Items.Add("Suppliers");
-            if (listRight.Contains("Add country") || listRight.Contains("Edit country") || listRight.Contains("View country") || listRight.Contains("Delete country"))
-                Table_ComboBox.Items.Add("Countries");
-            if (listRight.Contains("Add order") || listRight.Contains("Edit order") || listRight.Contains("View order") || listRight.Contains("Delete order"))
-                Table_ComboBox.Items.Add("Orders");
+            }
+
             Table_ComboBox.SelectedIndex = 0;
         }
 
-        private async void StartTask_Button_Click(object sender, EventArgs e)
-        {
-            int result = 0;
+        private void StartTask_Button_Click(object sender, EventArgs e)
+        {            
             switch (Table_ComboBox.SelectedItem.ToString())
             {
                 case "Users":
@@ -67,18 +61,18 @@ namespace ElectricalDevicesCW
                     }
                     break;
 
-                case "ModelTypes":
-                    modelTypeForm = new ModelTypeForm();
-                    modelTypeForm.StartPosition = FormStartPosition.Manual;
-                    modelTypeForm.Location = new Point(Location.X, Location.Y);
-                    if (modelTypeForm.ShowDialog() == DialogResult.OK)
+                case "Types":
+                    TypeForm = new TypeForm();
+                    TypeForm.StartPosition = FormStartPosition.Manual;
+                    TypeForm.Location = new Point(Location.X, Location.Y);
+                    if (TypeForm.ShowDialog() == DialogResult.OK)
                     {
 
                     }
                     break;
 
-                case "DeviceModels":
-                    deviceModelForm = new DeviceModelForm();
+                case "Models":
+                    deviceModelForm = new ModelForm();
                     deviceModelForm.StartPosition = FormStartPosition.Manual;
                     deviceModelForm.Location = new Point(Location.X, Location.Y);
                     if (deviceModelForm.ShowDialog() == DialogResult.OK)
@@ -95,45 +89,33 @@ namespace ElectricalDevicesCW
 
                     }
                     break;
-                case "Manufacturers":                    
-                    if (int.TryParse(await dataBaseService.ReadCountryTableAsync(), out result) == true)
+                case "Manufacturers":
+                    manufacturerForm = new ManufacturerForm();
+                    manufacturerForm.StartPosition = FormStartPosition.Manual;
+                    manufacturerForm.Location = new Point(Location.X, Location.Y);
+                    if (manufacturerForm.ShowDialog() == DialogResult.OK)
                     {
-                        if (int.TryParse(await dataBaseService.ReadManufacturerTableAsync(), out result) == true)
-                        {
-                            manufacturerForm = new ManufacturerForm();
-                            manufacturerForm.StartPosition = FormStartPosition.Manual;
-                            manufacturerForm.Location = new Point(Location.X, Location.Y);
-                            if (manufacturerForm.ShowDialog() == DialogResult.OK)
-                            {
 
-                            }
-                        }
-                    }    
+                    }
                     break;
 
-                case "Suppliers":                    
-                    if (int.TryParse(await dataBaseService.ReadSupplierTableAsync(), out result) == true)
+                case "Suppliers":
+                    supplierForm = new SupplierForm();
+                    supplierForm.StartPosition = FormStartPosition.Manual;
+                    supplierForm.Location = new Point(Location.X, Location.Y);
+                    if (supplierForm.ShowDialog() == DialogResult.OK)
                     {
-                        supplierForm = new SupplierForm();
-                        supplierForm.StartPosition = FormStartPosition.Manual;
-                        supplierForm.Location = new Point(Location.X, Location.Y);
-                        if (supplierForm.ShowDialog() == DialogResult.OK)
-                        {
 
-                        }
                     }
-                        break;
-                case "Countries":                   
-                    if (int.TryParse(await dataBaseService.ReadCountryTableAsync(), out result) == true)
+                    break;
+                case "Countries":
+                    countryForm = new CountryForm();
+                    countryForm.StartPosition = FormStartPosition.Manual;
+                    countryForm.Location = new Point(Location.X, Location.Y);
+                    if (countryForm.ShowDialog() == DialogResult.OK)
                     {
-                        countryForm = new CountryForm();
-                        countryForm.StartPosition = FormStartPosition.Manual;
-                        countryForm.Location = new Point(Location.X, Location.Y);
-                        if (countryForm.ShowDialog() == DialogResult.OK)
-                        {
 
-                        }
-                    }                    
+                    }
                     break;
                 case "Orders":
                     orderForm = new OrderForm();
@@ -150,6 +132,6 @@ namespace ElectricalDevicesCW
         private void Cancel_Button_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
+        }       
     }
 }

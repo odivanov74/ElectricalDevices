@@ -17,8 +17,7 @@ namespace ElectricalDevicesCW.Forms
         int supplierSelectedId = 0;
         public SupplierForm()
         {
-            InitializeComponent();
-            RefreshData();
+            InitializeComponent();            
         }
 
         private async void Add_Button_Click(object sender, EventArgs e)
@@ -77,10 +76,22 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Supplier_ListBox.Items.Clear();
-                SupplierDataManager.Instance.GetFullDataListSuppliers().ForEach(s => Supplier_ListBox.Items.Add(s));
+                ModelDataManager.Instance.GetFullDataListSuppliers().ForEach(s => Supplier_ListBox.Items.Add(s));
                 Name_TextBox.Text = "";
             }
             else MessageBox.Show(str);             
+        }
+
+        private async void SupplierForm_Load(object sender, EventArgs e)
+        {
+            int result = 0;
+            string str = await dataBaseService.ReadSupplierTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+            RefreshData();
         }
     }
 }

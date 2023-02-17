@@ -1,7 +1,7 @@
 ﻿
 namespace ElectricalDevicesCW.Forms
 {
-    partial class ModelTypeForm
+    partial class TypeForm
     {
         /// <summary>
         /// Required designer variable.
@@ -121,7 +121,7 @@ namespace ElectricalDevicesCW.Forms
             this.Type_ListBox.TabIndex = 80;
             this.Type_ListBox.SelectedIndexChanged += new System.EventHandler(this.Type_ListBox_SelectedIndexChanged);
             // 
-            // ModelTypeForm
+            // TypeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -129,8 +129,8 @@ namespace ElectricalDevicesCW.Forms
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Type_ListBox);
-            this.Name = "ModelTypeForm";
-            this.Text = "ModelTypeForm";    
+            this.Name = "TypeForm";
+            this.Text = "TypeForm";    
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

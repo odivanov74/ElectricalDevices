@@ -130,7 +130,7 @@ namespace ElectricalDevicesCW.Forms
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Country_ListBox);
             this.Name = "CountryForm";
-            this.Text = "CountryForm";
+            this.Text = "CountryForm";            
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

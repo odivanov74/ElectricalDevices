@@ -1,7 +1,7 @@
 ﻿
 namespace ElectricalDevicesCW.Forms
 {
-    partial class SupplierForm
+    partial class BasketForm
     {
         /// <summary>
         /// Required designer variable.
@@ -36,7 +36,7 @@ namespace ElectricalDevicesCW.Forms
             this.Add_Button = new System.Windows.Forms.Button();
             this.Name_TextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.Supplier_ListBox = new System.Windows.Forms.ListBox();
+            this.Basket_ListBox = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,12 +48,12 @@ namespace ElectricalDevicesCW.Forms
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.Add_Button);
             this.groupBox1.Controls.Add(this.Name_TextBox);
-            this.groupBox1.Location = new System.Drawing.Point(234, 24);
+            this.groupBox1.Location = new System.Drawing.Point(238, 22);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(412, 225);
             this.groupBox1.TabIndex = 82;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Поставщик";
+            this.groupBox1.Text = "Корзина";
             // 
             // Edit_Button
             // 
@@ -106,32 +106,32 @@ namespace ElectricalDevicesCW.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 8);
+            this.label1.Location = new System.Drawing.Point(9, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(118, 13);
+            this.label1.Size = new System.Drawing.Size(86, 13);
             this.label1.TabIndex = 81;
-            this.label1.Text = "Список поставщиков:";
+            this.label1.Text = "Список корзин:";
             // 
-            // Supplier_ListBox
+            // Basket_ListBox
             // 
-            this.Supplier_ListBox.FormattingEnabled = true;
-            this.Supplier_ListBox.Location = new System.Drawing.Point(8, 24);
-            this.Supplier_ListBox.Name = "Supplier_ListBox";
-            this.Supplier_ListBox.Size = new System.Drawing.Size(220, 225);
-            this.Supplier_ListBox.TabIndex = 80;
-            this.Supplier_ListBox.SelectedIndexChanged += new System.EventHandler(this.Supplier_ListBox_SelectedIndexChanged);
+            this.Basket_ListBox.FormattingEnabled = true;
+            this.Basket_ListBox.Location = new System.Drawing.Point(12, 22);
+            this.Basket_ListBox.Name = "Basket_ListBox";
+            this.Basket_ListBox.Size = new System.Drawing.Size(220, 225);
+            this.Basket_ListBox.TabIndex = 80;
+            this.Basket_ListBox.SelectedIndexChanged += new System.EventHandler(this.Basket_ListBox_SelectedIndexChanged);
             // 
-            // SupplierForm
+            // BasketForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 255);
+            this.ClientSize = new System.Drawing.Size(656, 253);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.Supplier_ListBox);
-            this.Name = "SupplierForm";
-            this.Text = "SupplierForm";
-            this.Load += new System.EventHandler(this.SupplierForm_Load);
+            this.Controls.Add(this.Basket_ListBox);
+            this.Name = "BasketForm";
+            this.Text = "BasketForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.BasketForm_FormClosed);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -148,6 +148,6 @@ namespace ElectricalDevicesCW.Forms
         private System.Windows.Forms.Button Add_Button;
         private System.Windows.Forms.TextBox Name_TextBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox Supplier_ListBox;
+        private System.Windows.Forms.ListBox Basket_ListBox;
     }
 }
