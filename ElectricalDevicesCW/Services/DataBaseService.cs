@@ -19,6 +19,8 @@ namespace ElectricalDevicesCW
         SqlDataAdapter adapterSupplier = new SqlDataAdapter();
         SqlDataAdapter adapterType = new SqlDataAdapter();
         SqlDataAdapter adapterModel = new SqlDataAdapter();
+        SqlDataAdapter adapterModelFraction = new SqlDataAdapter();
+        SqlDataAdapter adapterModelQuantity = new SqlDataAdapter();
         SqlDataAdapter adapterDevice = new SqlDataAdapter();
 
         SqlDataAdapter adapterUser = new SqlDataAdapter();
@@ -451,7 +453,7 @@ namespace ElectricalDevicesCW
                                                         int model_id)
         {
             await ReadModelTableAsync();
-            if (AvailabilityСheck(ModelDataManager.Instance.Models, "model_name", model_name) == true) return "Такая модель устройства уже имеется в базе!";
+            //if (AvailabilityСheck(ModelDataManager.Instance.Models, "model_name", model_name) == true) return "Такая модель устройства уже имеется в базе!";
 
             string cmd = $"update models set model_name ='{model_name}'," +
                                     $" type_FK = {type_id}," +
@@ -459,14 +461,14 @@ namespace ElectricalDevicesCW
                                     $" price = {price}," +
                                     $" stock_balance = {stock_balance}," +
                                     $" manufacturer_FK = {manufacturer_id}," +
-                                    $" supplier_FK = {supplier_id}" +
-                                    $" reserved = {reserved}," +
+                                    $" supplier_FK = {supplier_id}," +
+                                    $" reserved = {reserved}" +
                                     $" where model_id = {model_id};";
             SqlCommand update = new SqlCommand(cmd, connection);
 
             for (int i = 0; i < ModelDataManager.Instance.Models.Tables[0].Rows.Count; i++)
             {
-                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("deviceModel_id") == model_id)
+                if (ModelDataManager.Instance.Models.Tables[0].Rows[i].Field<int>("model_id") == model_id)
                 {
                     ModelDataManager.Instance.Models.Tables[0].Rows[i]["model_name"] = model_name;
                     ModelDataManager.Instance.Models.Tables[0].Rows[i]["type_FK"] = type_id;
@@ -593,9 +595,9 @@ namespace ElectricalDevicesCW
         }
 
         //сортировка
-        public async Task<string> SelectModelTableAsync(string orderBy, string direction, string Entity2 = null, string entityName2 = null, string Entity3 = null, string entityName3 = null)
+        public async Task<string> SortModelTableAsync(string orderBy, string direction, string Entity2 = null, string entityName2 = null, string Entity3 = null, string entityName3 = null)
         {
-            string cmd = "Select * from models";
+            string cmd = "Select * from models ";
 
             if(Entity2 != null)
             {
@@ -635,8 +637,75 @@ namespace ElectricalDevicesCW
             return outStr;
         }
 
+        //поиск
+        public async Task<string> SearchModelTableAsync(string cmdSearch, string cmdFraction, string cmdQuantity)
+        {
+            adapterModel = new SqlDataAdapter(cmdSearch, connection);
+            commandBuilder = new SqlCommandBuilder(adapterModel);
+            ModelDataManager.Instance.Models.Clear();
+            int result = 0;
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterModel.Fill(ModelDataManager.Instance.Models).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            if (int.TryParse(outStr, out result) == true && result > 0)
+            {
+                if(cmdFraction != "") outStr = await GetModelFractionTableAsync(cmdFraction);
+                if (int.TryParse(outStr, out result) == true && cmdQuantity != "") outStr = await GetModelQuantityTableAsync(cmdQuantity);
+            }        
 
+            return outStr;
+        }
 
+        public async Task<string> GetModelFractionTableAsync(string cmd)
+        {
+            adapterModelFraction = new SqlDataAdapter(cmd, connection);
+            commandBuilder = new SqlCommandBuilder(adapterModelFraction);
+            ModelDataManager.Instance.Fraction.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterModelFraction.Fill(ModelDataManager.Instance.Fraction).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
+        public async Task<string> GetModelQuantityTableAsync(string cmd)
+        {
+            adapterModelQuantity = new SqlDataAdapter(cmd, connection);
+            commandBuilder = new SqlCommandBuilder(adapterModelQuantity);
+            ModelDataManager.Instance.Quantity.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterModelQuantity.Fill(ModelDataManager.Instance.Quantity).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
 
 
         #endregion
@@ -866,6 +935,50 @@ namespace ElectricalDevicesCW
             }
             return outStr;
         }
+
+        //сортировка
+        public async Task<string> SelectDeviceTableAsync(string orderBy, string direction, string Entity2 = null, string entityName2 = null, string Entity3 = null, string entityName3 = null)
+        {
+            string cmd = "Select * from devices";
+
+            if (Entity2 != null)
+            {
+                cmd += $" inner join {Entity2} on {entityName2}_FK = {entityName2}_id";
+            }
+
+            if (Entity3 != null)
+            {
+                cmd += $" inner join {Entity3} on {entityName3}_FK = {entityName3}_id";
+            }
+
+            if (direction == "По убыванию")
+            {
+                cmd += $" order by {orderBy} desc;";
+            }
+            else
+            {
+                cmd += $" order by {orderBy} asc;";
+            }
+
+            adapterDevice = new SqlDataAdapter(cmd, connection);
+            commandBuilder = new SqlCommandBuilder(adapterDevice);
+            ModelDataManager.Instance.Devices.Clear();
+
+            string outStr = "";
+            await Task.Run(() =>
+            {
+                try
+                {
+                    outStr = adapterDevice.Fill(ModelDataManager.Instance.Devices).ToString();
+                }
+                catch (Exception ex)
+                {
+                    outStr = ex.Message;
+                }
+            });
+            return outStr;
+        }
+
         #endregion
 
         #region сущность Type

@@ -99,7 +99,7 @@ namespace ElectricalDevicesCW.Forms
                 MessageBox.Show(str);
                 return;
             }
-            ModelDataManager.Instance.GetNameListCounties().ForEach(m => Country_ComboBox.Items.Add(m));
+            ModelDataManager.Instance.GetNameListCountries().ForEach(m => Country_ComboBox.Items.Add(m));
             RefreshScreenData();
         }
     }

@@ -10,6 +10,8 @@ namespace ElectricalDevicesCW.Managers
     public class ModelDataManager
     {
         public DataSet Models { get; set; } = new DataSet();
+        public DataSet Fraction { get; set; } = new DataSet();
+        public DataSet Quantity { get; set; } = new DataSet();
         public DataSet Devices { get; set; } = new DataSet();
         public DataSet Countries { get; set; } = new DataSet();
         public DataSet Suppliers { get; set; } = new DataSet();
@@ -26,6 +28,12 @@ namespace ElectricalDevicesCW.Managers
             internal static readonly ModelDataManager instance = new ModelDataManager();
         }
 
+        public string GetValueField(string fieldName)
+        {            
+            object value = Models.Tables[0].Rows[0].Field<object>(fieldName);
+            if(value==null) return "Среднее значение = 0";
+            return "Среднее значение = " + value.ToString();
+        }
 
         public List<string> GetFullDataListModel()
         {
@@ -126,12 +134,26 @@ namespace ElectricalDevicesCW.Managers
             return price;
         }
 
+        public int GetFractionModel()
+        {
+            int fr = 0;
+            for (int i = 0; i < ModelDataManager.Instance.Fraction.Tables[0].Rows.Count; i++)
+            {
+                fr += (int)ModelDataManager.Instance.Fraction.Tables[0].Rows[i].Field<object>("Fraction");
+            }
+            return fr;
+        }
+
+        public int GetQuantityModel()
+        {
+            return ModelDataManager.Instance.Quantity.Tables[0].Rows[0].Field<int>("Quantity");
+        }
 
         public List<string> GetNameListType()
         {
             List<string> types = new List<string>();
 
-            for (int i = 0; i < Models.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < Types.Tables[0].Rows.Count; i++)
             {
                 types.Add($"{Types.Tables[0].Rows[i].Field<string>("type_name")}");
             }
@@ -167,6 +189,10 @@ namespace ElectricalDevicesCW.Managers
             return manufacturerId;
         }
 
+        public int GetFullQuantityModel(int idModel)
+        {
+            return GetStockBalance(idModel) + ShopDataManager.Instance.GetNumSaleModelToModelOrder(idModel);
+        }
 
         public int GetStockBalance(int idModel)
         {
@@ -208,7 +234,7 @@ namespace ElectricalDevicesCW.Managers
             return countries;
         }
 
-        public List<string> GetNameListCounties()
+        public List<string> GetNameListCountries()
         {
             List<string> countries = new List<string>();
 

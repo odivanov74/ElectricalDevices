@@ -30,8 +30,8 @@ namespace ElectricalDevicesCW.Forms
 
         private void Devices_ListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Devices_ListBox.SelectedItem == null) return;
-            string[] str = Devices_ListBox.SelectedItem.ToString().Split('.');
+            if (Device_ListBox.SelectedItem == null) return;
+            string[] str = Device_ListBox.SelectedItem.ToString().Split('.');
             deviceSelectedId = int.Parse(str[0]);
             Model_ComboBox.SelectedIndex = int.Parse(str[1]) - 1;            
             SerialNumber_TextBox.Text = str[2];
@@ -79,14 +79,14 @@ namespace ElectricalDevicesCW.Forms
                                                                 IsDefected_RadioButton.Checked);
             if (int.TryParse(str, out result) == true)
             {
-                RefreshData();
+                RefreshData();                
             }
             else MessageBox.Show(str);
         }
 
         private async void Edit_Button_Click(object sender, EventArgs e)
         {
-            if (Devices_ListBox.SelectedItem == null || string.IsNullOrWhiteSpace(SerialNumber_TextBox.Text) == true) return;
+            if (Device_ListBox.SelectedItem == null || string.IsNullOrWhiteSpace(SerialNumber_TextBox.Text) == true) return;
 
             int result = 0;
             string str = await dataBaseService.UpdateDeviceAsync((int)Model_ComboBox.SelectedIndex + 1,
@@ -96,22 +96,70 @@ namespace ElectricalDevicesCW.Forms
                                                                 deviceSelectedId);
             if (int.TryParse(str, out result) == true)
             {
-                RefreshData();
+                RefreshData();                
             }
             else MessageBox.Show(str);
         }
 
-        private async void DelDevice_Button_Click(object sender, EventArgs e)
+        private async void Del_Button_Click(object sender, EventArgs e)
         {
-            if (Devices_ListBox.SelectedItem == null) return;
+            if (Device_ListBox.SelectedItem == null) return;
 
             int result = 0;
-            string str = await dataBaseService.DeleteDeviceAsync(Devices_ListBox.SelectedItem.ToString());
+            string str = await dataBaseService.DeleteDeviceAsync(Device_ListBox.SelectedItem.ToString());
             if (int.TryParse(str, out result) == true)
             {
-                RefreshData();
+                RefreshData();                
             }
             else MessageBox.Show(str);
+        }
+
+        private async void Sort_Button_Click(object sender, EventArgs e)
+        {
+            int result = 0;
+            string str = "";
+
+            if (TypeSort_ComboBox.SelectedItem == null) return;
+            string direction = Direction_ComboBox.SelectedItem.ToString();         
+
+
+            switch (TypeSort_ComboBox.SelectedItem.ToString())
+            {
+                case "Без сортировки":
+                    RefreshData();
+                    break;
+                case "По индексу модели":
+                    str = await dataBaseService.SelectDeviceTableAsync("model_id", direction, "models", "model");
+                    break;
+                case "По названию модели":
+                    str = await dataBaseService.SelectDeviceTableAsync("model_name", direction, "models", "model");
+                    break;
+                case "По дате производства":
+                    str = await dataBaseService.SelectDeviceTableAsync("manufacture_date", direction);
+                    break;
+                case "По дате продажи":
+                    str = await dataBaseService.SelectDeviceTableAsync("order_date", direction, "orders", "order");
+                    break;                
+            }
+
+
+            if (int.TryParse(str, out result) == true)
+            {
+                Device_ListBox.Items.Clear();
+                ModelDataManager.Instance.GetFullDataListDevice().ForEach(d => Device_ListBox.Items.Add(d));
+                ClearDeviceInfo();
+            }
+        }
+
+
+        public void ClearDeviceInfo()
+        {
+            Model_ComboBox.SelectedIndex = 0;
+            SerialNumber_TextBox.Text = "";
+            ManufactureDate_DateTimePicker.Value = DateTime.Today;
+            NotDefected_RadioButton.Checked = true;
+            OrderName_TextBox.Text = "";
+            BasketName_TextBox.Text = "";
         }
 
         public async void RefreshData()
@@ -122,8 +170,9 @@ namespace ElectricalDevicesCW.Forms
 
             if (int.TryParse(str, out result) == true)
             {
-                Devices_ListBox.Items.Clear();
-                ModelDataManager.Instance.GetFullDataListDevice().ForEach(d => Devices_ListBox.Items.Add(d));                
+                Device_ListBox.Items.Clear();
+                ModelDataManager.Instance.GetFullDataListDevice().ForEach(d => Device_ListBox.Items.Add(d));
+                ClearDeviceInfo();
             }
             else MessageBox.Show(str);
         }
@@ -145,9 +194,18 @@ namespace ElectricalDevicesCW.Forms
                 return;
             }
 
+            str = await dataBaseService.ReadModelOrderTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+
             ModelDataManager.Instance.GetNameListModel().ForEach(d => Model_ComboBox.Items.Add(d));
             Model_ComboBox.SelectedIndex = 0;
+            TypeSort_ComboBox.SelectedIndex = 0;
+            Direction_ComboBox.SelectedIndex = 0;
             RefreshData();
-        }
+        }        
     }
 }

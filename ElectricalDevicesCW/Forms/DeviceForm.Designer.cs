@@ -46,12 +46,13 @@ namespace ElectricalDevicesCW.Forms
             this.Add_Button = new System.Windows.Forms.Button();
             this.SerialNumber_TextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.Devices_ListBox = new System.Windows.Forms.ListBox();
+            this.Device_ListBox = new System.Windows.Forms.ListBox();
             this.Sort_Button = new System.Windows.Forms.Button();
             this.Direction_ComboBox = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
             this.TypeSort_ComboBox = new System.Windows.Forms.ComboBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -72,9 +73,9 @@ namespace ElectricalDevicesCW.Forms
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.Add_Button);
             this.groupBox1.Controls.Add(this.SerialNumber_TextBox);
-            this.groupBox1.Location = new System.Drawing.Point(492, 22);
+            this.groupBox1.Location = new System.Drawing.Point(500, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(412, 265);
+            this.groupBox1.Size = new System.Drawing.Size(412, 276);
             this.groupBox1.TabIndex = 71;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Устройство";
@@ -110,13 +111,13 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Del_Button
             // 
-            this.Del_Button.Location = new System.Drawing.Point(274, 220);
+            this.Del_Button.Location = new System.Drawing.Point(274, 232);
             this.Del_Button.Name = "Del_Button";
             this.Del_Button.Size = new System.Drawing.Size(133, 39);
             this.Del_Button.TabIndex = 70;
             this.Del_Button.Text = "Удалить";
             this.Del_Button.UseVisualStyleBackColor = true;
-            this.Del_Button.Click += new System.EventHandler(this.DelDevice_Button_Click);
+            this.Del_Button.Click += new System.EventHandler(this.Del_Button_Click);
             // 
             // label2
             // 
@@ -165,7 +166,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Edit_Button
             // 
-            this.Edit_Button.Location = new System.Drawing.Point(139, 220);
+            this.Edit_Button.Location = new System.Drawing.Point(139, 232);
             this.Edit_Button.Name = "Edit_Button";
             this.Edit_Button.Size = new System.Drawing.Size(133, 39);
             this.Edit_Button.TabIndex = 66;
@@ -205,7 +206,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Add_Button
             // 
-            this.Add_Button.Location = new System.Drawing.Point(4, 220);
+            this.Add_Button.Location = new System.Drawing.Point(4, 232);
             this.Add_Button.Name = "Add_Button";
             this.Add_Button.Size = new System.Drawing.Size(133, 39);
             this.Add_Button.TabIndex = 61;
@@ -224,29 +225,30 @@ namespace ElectricalDevicesCW.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 48);
+            this.label1.Location = new System.Drawing.Point(3, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(101, 13);
             this.label1.TabIndex = 69;
             this.label1.Text = "Список устройств:";
             // 
-            // Devices_ListBox
+            // Device_ListBox
             // 
-            this.Devices_ListBox.FormattingEnabled = true;
-            this.Devices_ListBox.Location = new System.Drawing.Point(3, 61);
-            this.Devices_ListBox.Name = "Devices_ListBox";
-            this.Devices_ListBox.Size = new System.Drawing.Size(483, 225);
-            this.Devices_ListBox.TabIndex = 68;
-            this.Devices_ListBox.SelectedIndexChanged += new System.EventHandler(this.Devices_ListBox_SelectedIndexChanged);
+            this.Device_ListBox.FormattingEnabled = true;
+            this.Device_ListBox.Location = new System.Drawing.Point(3, 74);
+            this.Device_ListBox.Name = "Device_ListBox";
+            this.Device_ListBox.Size = new System.Drawing.Size(483, 212);
+            this.Device_ListBox.TabIndex = 68;
+            this.Device_ListBox.SelectedIndexChanged += new System.EventHandler(this.Devices_ListBox_SelectedIndexChanged);
             // 
             // Sort_Button
             // 
-            this.Sort_Button.Location = new System.Drawing.Point(353, 22);
+            this.Sort_Button.Location = new System.Drawing.Point(356, 17);
             this.Sort_Button.Name = "Sort_Button";
-            this.Sort_Button.Size = new System.Drawing.Size(133, 21);
+            this.Sort_Button.Size = new System.Drawing.Size(118, 23);
             this.Sort_Button.TabIndex = 83;
-            this.Sort_Button.Text = "Сортировать";
+            this.Sort_Button.Text = "Выполнить";
             this.Sort_Button.UseVisualStyleBackColor = true;
+            this.Sort_Button.Click += new System.EventHandler(this.Sort_Button_Click);
             // 
             // Direction_ComboBox
             // 
@@ -255,19 +257,10 @@ namespace ElectricalDevicesCW.Forms
             this.Direction_ComboBox.Items.AddRange(new object[] {
             "По возрастанию",
             "По убыванию"});
-            this.Direction_ComboBox.Location = new System.Drawing.Point(218, 22);
+            this.Direction_ComboBox.Location = new System.Drawing.Point(221, 18);
             this.Direction_ComboBox.Name = "Direction_ComboBox";
             this.Direction_ComboBox.Size = new System.Drawing.Size(129, 21);
             this.Direction_ComboBox.TabIndex = 82;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 6);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(70, 13);
-            this.label10.TabIndex = 81;
-            this.label10.Text = "Сортировка:";
             // 
             // TypeSort_ComboBox
             // 
@@ -275,30 +268,43 @@ namespace ElectricalDevicesCW.Forms
             this.TypeSort_ComboBox.FormattingEnabled = true;
             this.TypeSort_ComboBox.Items.AddRange(new object[] {
             "Без сортировки",
+            "По индексу модели",
+            "По названию модели",
             "По дате производства",
             "По дате продажи"});
-            this.TypeSort_ComboBox.Location = new System.Drawing.Point(3, 22);
+            this.TypeSort_ComboBox.Location = new System.Drawing.Point(6, 18);
             this.TypeSort_ComboBox.Name = "TypeSort_ComboBox";
             this.TypeSort_ComboBox.Size = new System.Drawing.Size(209, 21);
             this.TypeSort_ComboBox.TabIndex = 80;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.groupBox2.Controls.Add(this.TypeSort_ComboBox);
+            this.groupBox2.Controls.Add(this.Sort_Button);
+            this.groupBox2.Controls.Add(this.Direction_ComboBox);
+            this.groupBox2.Location = new System.Drawing.Point(3, 10);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(483, 48);
+            this.groupBox2.TabIndex = 84;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Сортировка";
             // 
             // DeviceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(909, 292);
-            this.Controls.Add(this.Sort_Button);
-            this.Controls.Add(this.Direction_ComboBox);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.TypeSort_ComboBox);
+            this.ClientSize = new System.Drawing.Size(920, 292);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.Devices_ListBox);
+            this.Controls.Add(this.Device_ListBox);
             this.Name = "DeviceForm";
             this.Text = "DeviceForm";
             this.Load += new System.EventHandler(this.DeviceForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -315,7 +321,7 @@ namespace ElectricalDevicesCW.Forms
         private System.Windows.Forms.TextBox SerialNumber_TextBox;
         private System.Windows.Forms.Button Del_Button;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox Devices_ListBox;
+        private System.Windows.Forms.ListBox Device_ListBox;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.DateTimePicker ManufactureDate_DateTimePicker;
         private System.Windows.Forms.Label label2;
@@ -326,7 +332,7 @@ namespace ElectricalDevicesCW.Forms
         private System.Windows.Forms.TextBox BasketName_TextBox;
         private System.Windows.Forms.Button Sort_Button;
         private System.Windows.Forms.ComboBox Direction_ComboBox;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox TypeSort_ComboBox;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }

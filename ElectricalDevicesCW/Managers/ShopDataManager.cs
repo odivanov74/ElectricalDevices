@@ -203,7 +203,8 @@ namespace ElectricalDevicesCW.Managers
                 }
             }
             return result;
-        }
+        }        
+
 
         public int GetNumSaleModelToModelOrder(int idModel)
         {
@@ -212,7 +213,7 @@ namespace ElectricalDevicesCW.Managers
             {
                 if (ModelOrder.Tables[0].Rows[i].Field<int>("model_id") == idModel)
                 {
-                    count++;
+                    count += ModelOrder.Tables[0].Rows[i].Field<int>("amount");
                 }
             }
             return count;

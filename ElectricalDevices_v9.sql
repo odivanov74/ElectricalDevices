@@ -199,10 +199,15 @@ values
 (6,'BOSCH38-0037', '2022-11-22',null,null,0),
 (6,'BOSCH38-0044', '2022-11-22',null,null,0);
 
+insert into devices
+values
+--Model_FK, serial_number, manufacture_date, order_FK, basket_FK, isDefected
+(2,'BOSCH35-1228', '2022-12-07',1,null,0);
+
 insert into modelOrder
 values
 --model_id,order_id,amount
-(1,1,1),--первый заказ
+(1,1,2),--первый заказ
 (2,1,1),--первый заказ
 (4,2,1);--второй заказ
 
@@ -266,3 +271,263 @@ select * from models
 inner join devices on model_FK = model_id
 inner join orders on order_FK = order_id
 order by order_date;
+
+--вывод модели по дате выпуска
+select * from models
+inner join devices on model_FK = model_id
+order by manufacture_date;
+
+select * from devices;
+
+select * from devices
+inner join models on model_FK = model_id
+order by model_name;
+--=====================================================================================================
+--найти самый дорогой вид приборов
+select TOP 1 * from models
+--inner join [types] on Type_id = Type_FK
+--where type_name = 'Электрочайник'
+order by price desc;
+
+--найти самый дешёвый вид приборов
+select TOP 1 * from models
+order by price asc;
+
+--найти среднюю стоимость приборов по типу и в целом
+select avg(price) as Средняя_стоимость from models
+inner join [types] on Type_id = Type_FK
+where Type_name = 'Электрочайник'; 
+
+--найти среднюю стоимость приборов проданных за определенный промежуток времени
+select avg(price) as AVGPrice from models
+inner join ModelOrder as DevOrd on DevOrd.Model_id = Models.Model_id 
+inner join Orders on Orders.order_id = DevOrd.order_id
+where order_date >= '2023-01-20' and order_date <= '2023-01-22'; 
+
+--найти приборы с ценой в заданных пределах
+select * from models
+--inner join [types] on type_id = type_FK
+where price >= 1000 and price <= 3000;
+
+
+select * from models
+where price = 2699   ;
+
+
+--найти все приборы заданного производителя
+select * from models
+inner join manufacturers on manufacturer_id = manufacturer_FK
+--inner join types on Type_id = Type_FK
+where manufacturer_name = 'Bosch';
+
+--найти все приборы с заданной датой выпуска
+select * from models
+inner join devices on model_FK= model_id
+where manufacture_date = '2022-6-23';
+
+--найти все приборы с заданной датой продажи
+select * from models
+inner join ModelOrder on ModelOrder.Model_id = Models.Model_id 
+inner join Orders on Orders.order_id = ModelOrder.order_id
+where order_date = '2023-1-21'
+
+
+--найти все приборы, чей вес находится в заданных пределах(интервал) для заданного производителя и в целом
+select * from models
+inner join types on Type_id = Type_FK
+inner join manufacturers on manufacturer_id = manufacturer_FK
+where [weight]>=1000
+and [weight]<=4000
+and manufacturer_name = 'Bosch';
+
+--найти долю приборов проданных за определенный период от общего времени продаж
+select (sum(amount)*100/(select sum(amount) from ModelOrder)) from ModelOrder as DevOrd
+inner join orders on Orders.order_id = DevOrd.order_id
+where order_date >= '2023-01-20' and order_date <= '2023-01-22';
+
+--найти самый популярный прибор(продано наибольшее количество)
+select * from models
+inner join modelOrder on modelOrder.model_id = models.model_id
+where amount = (select distinct max(amount) from modelOrder);
+
+
+--найти долю приборов(чья стоимость равна заданной)
+select (sum(stock_balance)*100/(select sum(stock_balance) from models)) as ДоляДешевыхПриборов from models
+where price = 2699;
+
+
+
+--найти долю дешевых приборов(чья стоимость меньше заданной), поступивших от заданного поставщика
+select (sum(stock_balance)*100/(select sum(stock_balance) from models
+								inner join suppliers on supplier_FK = supplier_id
+								where suppliers.supplier_name = 'Supplier1')) as ДоляДешевыхПриборов
+from models
+inner join suppliers on supplier_FK = supplier_id
+where price < 3700
+and supplier_name = 'Supplier1';
+
+--найти количество бракованных приборов, поступивших из заданной страны для заданного поставщика
+select count(isDefected) from devices
+inner join models on model_FK = model_id
+inner join manufacturers on manufacturer_FK = manufacturer_id
+inner join suppliers on supplier_FK = supplier_id
+where isDefected = 1
+and manufacturer_name = 'Bosch'
+and supplier_name = 'Supplier1';
+
+--найти среднюю стоимость приборов проданных за определенный промежуток времени
+select avg(price) as AVGPrice from models
+inner join modelOrder as DevOrd on DevOrd.model_id = models.model_id 
+inner join Orders on Orders.order_id = DevOrd.order_id
+where order_date >= '2023-01-20' and order_date <= '2023-01-22'; 
+
+--найти все приборы чья стоимость выше, чем средняя стоимость приборов заданного производителя
+select * from models
+inner join manufacturers on manufacturer_FK = manufacturer_id
+where manufacturer_name = 'Bosch'
+group by price, model_name, manufacturer_name, model_id, type_FK, weight, stock_balance, manufacturer_FK, supplier_FK,reserved,
+manufacturer_id,country_FK
+having price > (select avg(price) from models
+				inner join manufacturers on manufacturer_FK = manufacturer_id
+				where manufacturer_name = 'Bosch');
+
+
+
+
+--найти долю дешевых приборов(чья стоимость меньше заданной), поступивших от заданного производителя
+select (sum(stock_balance)*100/(select sum(stock_balance) from models
+								inner join manufacturers on manufacturer_FK = manufacturer_id
+								where manufacturer_name = 'Bosch')) as Fraction
+from models
+inner join manufacturers on manufacturer_FK = manufacturer_id
+where manufacturer_name = 'Bosch';
+
+
+--найти долю приборов, чья стоимость больше средней по заданному производителя, от поступивших от заданного производителя
+select (sum(stock_balance)*100/(select sum(stock_balance) from models)) as Fraction from models
+group by price, model_name, model_id, type_FK, weight, stock_balance, manufacturer_FK, supplier_FK,reserved
+having price < (select avg(price) from models);
+
+--найти долю приборов, чья стоимость больше средней по заданному производителя, от поступивших от заданного производителя
+select (count(device_id)*100/(select count(device_id) from models
+							  inner join devices on model_FK = model_id
+							  where order_FK is NULL)) as Fraction from models
+inner join devices on model_FK = model_id
+where order_FK is NULL and price < (select avg(price) from models);
+
+
+
+
+--найти количество приборов чья стоимость выше, чем средняя стоимость приборов заданного производителя
+select count(price) as Quantity from models
+inner join manufacturers on manufacturer_FK = manufacturer_id
+where manufacturer_name = 'Bosch'
+and price < (select avg(price) from models
+			inner join manufacturers on manufacturer_FK = manufacturer_id
+			where manufacturer_name = 'Bosch');
+
+
+--найти долю дешевых приборов(чья стоимость меньше заданной), поступивших от заданного производителя
+select (sum(stock_balance)*100/(select sum(stock_balance) from models)) as Fraction from models
+where model_id = (select TOP 1 * from models order by price desc);
+
+
+select * from models where price = (select max(price) from models)
+
+select count(model_name) as Quantity from models 
+inner join manufacturers on manufacturer_FK = manufacturer_id
+where manufacturer_name = 'Bosch' and price = (select max(price) from models)
+
+select (sum(stock_balance)*100/(select sum(stock_balance) from models)) as Fraction from models
+inner join manufacturers on manufacturer_FK = manufacturer_id
+where manufacturer_name = 'Redmond'
+group by price, model_name, model_id, type_FK, weight, stock_balance, manufacturer_FK, supplier_FK,reserved,manufacturer_name, manufacturer_id,country_FK
+having price = (select max(price) from models 
+				inner join manufacturers on manufacturer_FK = manufacturer_id
+				where manufacturer_name = 'Redmond');
+
+select (sum(stock_balance)*100/(select sum(stock_balance) from models)) as Fraction from models     
+group by price, model_name, model_id, type_FK, weight, stock_balance, manufacturer_FK, supplier_FK, reserved   
+having price = (select min(price) from models    );
+
+Select * from models 
+inner join devices on model_FK = model_id   
+where manufacture_date > '2022-12-14'  ;
+
+select count(model_name) as Quantity from models 
+inner join devices on model_FK = model_id   
+where manufacture_date > '2022-7-23' and stock_balance>0;
+
+
+select * from models;
+
+select (count(device_id)*100/(	select count(device_id) from devices 
+								inner join models on model_FK = model_id 
+								inner join types on type_FK = type_id  
+								where stock_balance>0 and type_name = 'Электрочайник'  )) as Fraction from devices 
+inner join models on model_FK = model_id 
+inner join types on type_FK = type_id  
+where manufacture_date > '2022-12-21' and stock_balance>0 and type_name = 'Электрочайник' ;
+
+select count(device_id) from devices 
+inner join models on model_FK = model_id 
+where weight = (select max(weight) from models) ;
+
+select (count(device_id)) as Fraction from models 
+inner join devices on model_FK = model_id 
+inner join types on type_FK = type_id  
+where manufacture_date > '2022-12-21'  and order_FK is null  and type_name = 'Электрочайник' ;
+
+select count(device_id) as Quantity from models 
+inner join devices on model_FK = model_id   
+where manufacture_date > '2022-12-23' and order_FK is null  ;
+
+select * from devices;
+
+Select * from models inner join devices on model_FK = model_id   where price = 2699   ;
+
+select * from modelOrder;
+
+Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models
+inner join devices on model_FK = model_id
+where order_FK is null 
+and price > (select avg(price) from models   where order_FK is null);
+
+
+select (count(device_id)*100/(select count(device_id) from models 
+								inner join devices on model_FK = model_id 
+								inner join types on type_FK = type_id 
+								inner join manufacturers on manufacturer_FK = manufacturer_id 
+								where type_name = 'Утюг' and manufacturer_name = 'Bosch' and order_FK is null)) as Fraction 
+from models 
+inner join devices on model_FK = model_id 
+inner join types on type_FK = type_id 
+inner join manufacturers on manufacturer_FK = manufacturer_id 
+where weight = (select max(weight) from models 
+				inner join types on type_FK = type_id 
+				inner join manufacturers on manufacturer_FK = manufacturer_id 
+				where type_name = 'Утюг' and manufacturer_name = 'Bosch' and order_FK is null);
+
+				select count(device_id) from models 
+								inner join devices on model_FK = model_id 
+								inner join types on type_FK = type_id 
+								inner join manufacturers on manufacturer_FK = manufacturer_id 
+								where type_name = 'Утюг' and manufacturer_name = 'Bosch' and order_FK is null
+
+Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models 
+inner join devices on model_FK = model_id 
+inner join types on type_FK = type_id 
+inner join manufacturers on manufacturer_FK = manufacturer_id 
+inner join countries on country_FK = country_id 
+where weight = 1200 and type_name = 'Утюг' and country_name = 'Germany' and order_FK is null;
+
+select (count(device_id)*100/(select count(device_id) from models 
+								inner join devices on model_FK = model_id 
+								inner join types on type_FK = type_id  
+								where type_name = 'Утюг' and manufacturer_name = 'Redmond')) as Fraction 
+from models 
+inner join devices on model_FK = model_id 
+inner join manufacturers on manufacturer_FK = manufacturer_id 
+inner join countries on country_FK = country_id 
+inner join types on type_FK = type_id  
+where country_name = 'Russian Federation' and type_name = 'Утюг' and manufacturer_name = 'Redmond';
