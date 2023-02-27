@@ -178,17 +178,7 @@ namespace ElectricalDevicesCW
             {
                 MessageBox.Show(str);
             }
-        }
-
-        private void Type_ComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TypeSort_ComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+        }     
 
         private async void ShopForm_Load(object sender, EventArgs e)
         {
@@ -222,9 +212,13 @@ namespace ElectricalDevicesCW
                 return;
             }
 
-            Type_ComboBox.Items.Add("Весь список");
-            ModelDataManager.Instance.GetNameListTypes().ForEach(t => Type_ComboBox.Items.Add(t));
-            Type_ComboBox.SelectedIndex = 0;
+            str = await dataBaseService.ReadOrderTableAsync();
+            if (int.TryParse(str, out result) == false)
+            {
+                MessageBox.Show(str);
+                return;
+            }
+           
             ShopDataManager.Instance.GetFullListBasket(client.Id).ForEach(b => BasketNames_ComboBox.Items.Add(b));
             BasketNames_ComboBox.SelectedIndex = 0;
             RefreshData();

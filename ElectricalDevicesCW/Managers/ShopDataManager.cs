@@ -111,7 +111,7 @@ namespace ElectricalDevicesCW.Managers
                     devices.Add($"{modelName} " +
                                $"{ModelDataManager.Instance.GetNameType(idType)} " +
                                $"{ModelDataManager.Instance.GetNameManufacturer(idManufacturer)} " +
-                               $"{ModelOrder.Tables[0].Rows[i].Field<int>("amount")} шт. " +
+                               $"{ModelDataManager.Instance.GetNumSaleModelToOrder(idOrder, idModel)} шт. " +
                                $"{ModelDataManager.Instance.GetPriceModel(idModel)} руб.");
                 }
             }
@@ -185,7 +185,7 @@ namespace ElectricalDevicesCW.Managers
                 if (ModelOrder.Tables[0].Rows[i].Field<int>("order_id") == idOrder)
                 {
                     idModel = ModelOrder.Tables[0].Rows[i].Field<int>("model_id");                    
-                    price += ModelDataManager.Instance.GetPriceModel(idModel)* ModelOrder.Tables[0].Rows[i].Field<int>("amount");
+                    price += ModelDataManager.Instance.GetPriceModel(idModel)* ModelDataManager.Instance.GetNumSaleModelToOrder(idOrder, idModel);
                 }
             }
             return price;
@@ -204,20 +204,5 @@ namespace ElectricalDevicesCW.Managers
             }
             return result;
         }        
-
-
-        public int GetNumSaleModelToModelOrder(int idModel)
-        {
-            int count = 0;
-            for (int i = 0; i < ModelOrder.Tables[0].Rows.Count; i++)
-            {
-                if (ModelOrder.Tables[0].Rows[i].Field<int>("model_id") == idModel)
-                {
-                    count += ModelOrder.Tables[0].Rows[i].Field<int>("amount");
-                }
-            }
-            return count;
-        }
-
     }
 }

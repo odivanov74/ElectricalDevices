@@ -99,8 +99,6 @@ namespace ElectricalDevicesCW.Forms
             this.Search_Button = new System.Windows.Forms.Button();
             this.Search1_GroupBox = new System.Windows.Forms.GroupBox();
             this.Date_GroupBox = new System.Windows.Forms.GroupBox();
-            this.isDefected_RadioButton = new System.Windows.Forms.RadioButton();
-            this.NotDefected_RadioButton = new System.Windows.Forms.RadioButton();
             this.Date_DateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.EndDate_DateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
@@ -115,10 +113,24 @@ namespace ElectricalDevicesCW.Forms
             this.EndValue_TextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.All_RadioButton = new System.Windows.Forms.RadioButton();
-            this.Saled_RadioButton = new System.Windows.Forms.RadioButton();
-            this.InStock_RadioButton = new System.Windows.Forms.RadioButton();
+            this.isDefected_RadioButton = new System.Windows.Forms.RadioButton();
+            this.NotDefected_RadioButton = new System.Windows.Forms.RadioButton();
+            this.UpPartFraction_ComboBox = new System.Windows.Forms.ComboBox();
+            this.DownPartFraction_ComboBox = new System.Windows.Forms.ComboBox();
+            this.Part1_CheckBox = new System.Windows.Forms.CheckBox();
+            this.All1_CheckBox = new System.Windows.Forms.CheckBox();
+            this.All2_CheckBox = new System.Windows.Forms.CheckBox();
+            this.Part2_CheckBox = new System.Windows.Forms.CheckBox();
+            this.All3_CheckBox = new System.Windows.Forms.CheckBox();
+            this.Part3_CheckBox = new System.Windows.Forms.CheckBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.CmdVisible_Button = new System.Windows.Forms.Button();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.Country_TextBox = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Saled_NumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Reserved_NumericUpDown)).BeginInit();
@@ -136,7 +148,6 @@ namespace ElectricalDevicesCW.Forms
             this.Search1_GroupBox.SuspendLayout();
             this.Date_GroupBox.SuspendLayout();
             this.Value_GroupBox.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -153,13 +164,13 @@ namespace ElectricalDevicesCW.Forms
             this.Models_ListBox.FormattingEnabled = true;
             this.Models_ListBox.Location = new System.Drawing.Point(9, 322);
             this.Models_ListBox.Name = "Models_ListBox";
-            this.Models_ListBox.Size = new System.Drawing.Size(638, 186);
+            this.Models_ListBox.Size = new System.Drawing.Size(705, 212);
             this.Models_ListBox.TabIndex = 6;
             this.Models_ListBox.SelectedIndexChanged += new System.EventHandler(this.Models_ListBox_SelectedIndexChanged);
             // 
             // Del_Button
             // 
-            this.Del_Button.Location = new System.Drawing.Point(273, 451);
+            this.Del_Button.Location = new System.Drawing.Point(273, 478);
             this.Del_Button.Name = "Del_Button";
             this.Del_Button.Size = new System.Drawing.Size(133, 39);
             this.Del_Button.TabIndex = 14;
@@ -170,6 +181,8 @@ namespace ElectricalDevicesCW.Forms
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.groupBox1.Controls.Add(this.Country_TextBox);
+            this.groupBox1.Controls.Add(this.label28);
             this.groupBox1.Controls.Add(this.Quantity_TextBox);
             this.groupBox1.Controls.Add(this.Fraction_TextBox);
             this.groupBox1.Controls.Add(this.Search_TextBox);
@@ -194,34 +207,34 @@ namespace ElectricalDevicesCW.Forms
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.Add_Button);
             this.groupBox1.Controls.Add(this.Name_TextBox);
-            this.groupBox1.Location = new System.Drawing.Point(653, 12);
+            this.groupBox1.Location = new System.Drawing.Point(721, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(412, 496);
+            this.groupBox1.Size = new System.Drawing.Size(412, 522);
             this.groupBox1.TabIndex = 67;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model";
             // 
             // Quantity_TextBox
             // 
-            this.Quantity_TextBox.Location = new System.Drawing.Point(8, 397);
+            this.Quantity_TextBox.Location = new System.Drawing.Point(8, 407);
             this.Quantity_TextBox.Multiline = true;
             this.Quantity_TextBox.Name = "Quantity_TextBox";
             this.Quantity_TextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Quantity_TextBox.Size = new System.Drawing.Size(397, 48);
+            this.Quantity_TextBox.Size = new System.Drawing.Size(397, 65);
             this.Quantity_TextBox.TabIndex = 83;
             // 
             // Fraction_TextBox
             // 
-            this.Fraction_TextBox.Location = new System.Drawing.Point(8, 306);
+            this.Fraction_TextBox.Location = new System.Drawing.Point(8, 294);
             this.Fraction_TextBox.Multiline = true;
             this.Fraction_TextBox.Name = "Fraction_TextBox";
             this.Fraction_TextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Fraction_TextBox.Size = new System.Drawing.Size(397, 85);
+            this.Fraction_TextBox.Size = new System.Drawing.Size(397, 107);
             this.Fraction_TextBox.TabIndex = 82;
             // 
             // Search_TextBox
             // 
-            this.Search_TextBox.Location = new System.Drawing.Point(8, 215);
+            this.Search_TextBox.Location = new System.Drawing.Point(8, 203);
             this.Search_TextBox.Multiline = true;
             this.Search_TextBox.Name = "Search_TextBox";
             this.Search_TextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -235,7 +248,7 @@ namespace ElectricalDevicesCW.Forms
             0,
             0,
             0});
-            this.Saled_NumericUpDown.Location = new System.Drawing.Point(344, 129);
+            this.Saled_NumericUpDown.Location = new System.Drawing.Point(344, 95);
             this.Saled_NumericUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.Saled_NumericUpDown.Maximum = new decimal(new int[] {
             10000,
@@ -249,7 +262,7 @@ namespace ElectricalDevicesCW.Forms
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(286, 131);
+            this.label11.Location = new System.Drawing.Point(286, 97);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(54, 13);
@@ -263,7 +276,7 @@ namespace ElectricalDevicesCW.Forms
             0,
             0,
             0});
-            this.Reserved_NumericUpDown.Location = new System.Drawing.Point(213, 129);
+            this.Reserved_NumericUpDown.Location = new System.Drawing.Point(220, 95);
             this.Reserved_NumericUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.Reserved_NumericUpDown.Maximum = new decimal(new int[] {
             10000,
@@ -277,7 +290,7 @@ namespace ElectricalDevicesCW.Forms
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(162, 131);
+            this.label4.Location = new System.Drawing.Point(169, 97);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(47, 13);
@@ -288,15 +301,15 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.Supplier_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Supplier_ComboBox.FormattingEnabled = true;
-            this.Supplier_ComboBox.Location = new System.Drawing.Point(99, 188);
+            this.Supplier_ComboBox.Location = new System.Drawing.Point(121, 148);
             this.Supplier_ComboBox.Name = "Supplier_ComboBox";
-            this.Supplier_ComboBox.Size = new System.Drawing.Size(154, 21);
+            this.Supplier_ComboBox.Size = new System.Drawing.Size(172, 21);
             this.Supplier_ComboBox.TabIndex = 76;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 191);
+            this.label3.Location = new System.Drawing.Point(6, 151);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(68, 13);
@@ -307,15 +320,15 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.Manufacturer_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Manufacturer_ComboBox.FormattingEnabled = true;
-            this.Manufacturer_ComboBox.Location = new System.Drawing.Point(99, 161);
+            this.Manufacturer_ComboBox.Location = new System.Drawing.Point(99, 121);
             this.Manufacturer_ComboBox.Name = "Manufacturer_ComboBox";
-            this.Manufacturer_ComboBox.Size = new System.Drawing.Size(154, 21);
+            this.Manufacturer_ComboBox.Size = new System.Drawing.Size(126, 21);
             this.Manufacturer_ComboBox.TabIndex = 74;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 164);
+            this.label2.Location = new System.Drawing.Point(6, 124);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(89, 13);
@@ -326,14 +339,14 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.Type_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Type_ComboBox.FormattingEnabled = true;
-            this.Type_ComboBox.Location = new System.Drawing.Point(88, 54);
+            this.Type_ComboBox.Location = new System.Drawing.Point(121, 42);
             this.Type_ComboBox.Name = "Type_ComboBox";
-            this.Type_ComboBox.Size = new System.Drawing.Size(205, 21);
+            this.Type_ComboBox.Size = new System.Drawing.Size(172, 21);
             this.Type_ComboBox.TabIndex = 72;
             // 
             // Price_NumericUpDown
             // 
-            this.Price_NumericUpDown.Location = new System.Drawing.Point(88, 104);
+            this.Price_NumericUpDown.Location = new System.Drawing.Point(285, 69);
             this.Price_NumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -355,7 +368,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Weight_NumericUpDown
             // 
-            this.Weight_NumericUpDown.Location = new System.Drawing.Point(88, 80);
+            this.Weight_NumericUpDown.Location = new System.Drawing.Point(99, 69);
             this.Weight_NumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -367,7 +380,7 @@ namespace ElectricalDevicesCW.Forms
             0,
             0});
             this.Weight_NumericUpDown.Name = "Weight_NumericUpDown";
-            this.Weight_NumericUpDown.Size = new System.Drawing.Size(120, 20);
+            this.Weight_NumericUpDown.Size = new System.Drawing.Size(126, 20);
             this.Weight_NumericUpDown.TabIndex = 70;
             this.Weight_NumericUpDown.Value = new decimal(new int[] {
             1,
@@ -377,7 +390,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Edit_Button
             // 
-            this.Edit_Button.Location = new System.Drawing.Point(138, 451);
+            this.Edit_Button.Location = new System.Drawing.Point(138, 478);
             this.Edit_Button.Name = "Edit_Button";
             this.Edit_Button.Size = new System.Drawing.Size(133, 39);
             this.Edit_Button.TabIndex = 66;
@@ -388,7 +401,7 @@ namespace ElectricalDevicesCW.Forms
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(5, 131);
+            this.label6.Location = new System.Drawing.Point(6, 97);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(63, 13);
@@ -398,7 +411,7 @@ namespace ElectricalDevicesCW.Forms
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(5, 31);
+            this.label9.Location = new System.Drawing.Point(5, 20);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(60, 13);
@@ -412,7 +425,7 @@ namespace ElectricalDevicesCW.Forms
             0,
             0,
             0});
-            this.StockBalance_NumericUpDown.Location = new System.Drawing.Point(88, 129);
+            this.StockBalance_NumericUpDown.Location = new System.Drawing.Point(99, 95);
             this.StockBalance_NumericUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.StockBalance_NumericUpDown.Maximum = new decimal(new int[] {
             10000,
@@ -426,7 +439,7 @@ namespace ElectricalDevicesCW.Forms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(5, 55);
+            this.label8.Location = new System.Drawing.Point(6, 45);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(29, 13);
@@ -436,7 +449,7 @@ namespace ElectricalDevicesCW.Forms
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(5, 107);
+            this.label5.Location = new System.Drawing.Point(238, 71);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
@@ -446,7 +459,7 @@ namespace ElectricalDevicesCW.Forms
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 82);
+            this.label7.Location = new System.Drawing.Point(6, 71);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(29, 13);
@@ -455,7 +468,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Add_Button
             // 
-            this.Add_Button.Location = new System.Drawing.Point(3, 451);
+            this.Add_Button.Location = new System.Drawing.Point(3, 478);
             this.Add_Button.Name = "Add_Button";
             this.Add_Button.Size = new System.Drawing.Size(133, 39);
             this.Add_Button.TabIndex = 61;
@@ -465,10 +478,10 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Name_TextBox
             // 
-            this.Name_TextBox.Location = new System.Drawing.Point(88, 28);
+            this.Name_TextBox.Location = new System.Drawing.Point(121, 17);
             this.Name_TextBox.Margin = new System.Windows.Forms.Padding(2);
             this.Name_TextBox.Name = "Name_TextBox";
-            this.Name_TextBox.Size = new System.Drawing.Size(205, 20);
+            this.Name_TextBox.Size = new System.Drawing.Size(172, 20);
             this.Name_TextBox.TabIndex = 56;
             // 
             // groupBox2
@@ -480,16 +493,16 @@ namespace ElectricalDevicesCW.Forms
             this.groupBox2.Controls.Add(this.TypeSort_ComboBox);
             this.groupBox2.Location = new System.Drawing.Point(9, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(638, 48);
+            this.groupBox2.Size = new System.Drawing.Size(705, 48);
             this.groupBox2.TabIndex = 85;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Сортировка";
             // 
             // ResetSort_Button
             // 
-            this.ResetSort_Button.Location = new System.Drawing.Point(555, 15);
+            this.ResetSort_Button.Location = new System.Drawing.Point(645, 15);
             this.ResetSort_Button.Name = "ResetSort_Button";
-            this.ResetSort_Button.Size = new System.Drawing.Size(76, 23);
+            this.ResetSort_Button.Size = new System.Drawing.Size(51, 23);
             this.ResetSort_Button.TabIndex = 87;
             this.ResetSort_Button.Text = "Сброс";
             this.ResetSort_Button.UseVisualStyleBackColor = true;
@@ -497,7 +510,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Sort_Button
             // 
-            this.Sort_Button.Location = new System.Drawing.Point(473, 16);
+            this.Sort_Button.Location = new System.Drawing.Point(563, 15);
             this.Sort_Button.Name = "Sort_Button";
             this.Sort_Button.Size = new System.Drawing.Size(76, 23);
             this.Sort_Button.TabIndex = 86;
@@ -537,37 +550,44 @@ namespace ElectricalDevicesCW.Forms
             // groupBox3
             // 
             this.groupBox3.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.groupBox3.Controls.Add(this.groupBox4);
+            this.groupBox3.Controls.Add(this.label24);
+            this.groupBox3.Controls.Add(this.CmdVisible_Button);
             this.groupBox3.Controls.Add(this.Search3_GroupBox);
+            this.groupBox3.Controls.Add(this.label27);
             this.groupBox3.Controls.Add(this.Search2_GroupBox);
+            this.groupBox3.Controls.Add(this.Search1_GroupBox);
             this.groupBox3.Controls.Add(this.ResetSearch_Button);
             this.groupBox3.Controls.Add(this.Search_Button);
-            this.groupBox3.Controls.Add(this.Search1_GroupBox);
+            this.groupBox3.Controls.Add(this.DownPartFraction_ComboBox);
+            this.groupBox3.Controls.Add(this.UpPartFraction_ComboBox);
             this.groupBox3.Location = new System.Drawing.Point(9, 69);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(638, 237);
+            this.groupBox3.Size = new System.Drawing.Size(705, 237);
             this.groupBox3.TabIndex = 87;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Поиск";
             // 
             // Search3_GroupBox
             // 
+            this.Search3_GroupBox.Controls.Add(this.label26);
             this.Search3_GroupBox.Controls.Add(this.SubSearch3_Button);
             this.Search3_GroupBox.Controls.Add(this.Date3_GroupBox);
             this.Search3_GroupBox.Controls.Add(this.ValueSearch3_ComboBox);
+            this.Search3_GroupBox.Controls.Add(this.All3_CheckBox);
             this.Search3_GroupBox.Controls.Add(this.ParamSearch3_ComboBox);
+            this.Search3_GroupBox.Controls.Add(this.Part3_CheckBox);
             this.Search3_GroupBox.Controls.Add(this.Value3_GroupBox);
-            this.Search3_GroupBox.Location = new System.Drawing.Point(6, 142);
+            this.Search3_GroupBox.Location = new System.Drawing.Point(10, 166);
             this.Search3_GroupBox.Name = "Search3_GroupBox";
-            this.Search3_GroupBox.Size = new System.Drawing.Size(625, 59);
+            this.Search3_GroupBox.Size = new System.Drawing.Size(685, 59);
             this.Search3_GroupBox.TabIndex = 102;
             this.Search3_GroupBox.TabStop = false;
             // 
             // SubSearch3_Button
             // 
-            this.SubSearch3_Button.Location = new System.Drawing.Point(6, 25);
+            this.SubSearch3_Button.Location = new System.Drawing.Point(6, 26);
             this.SubSearch3_Button.Name = "SubSearch3_Button";
-            this.SubSearch3_Button.Size = new System.Drawing.Size(54, 23);
+            this.SubSearch3_Button.Size = new System.Drawing.Size(54, 21);
             this.SubSearch3_Button.TabIndex = 100;
             this.SubSearch3_Button.Text = "-";
             this.SubSearch3_Button.UseVisualStyleBackColor = true;
@@ -580,7 +600,7 @@ namespace ElectricalDevicesCW.Forms
             this.Date3_GroupBox.Controls.Add(this.label19);
             this.Date3_GroupBox.Controls.Add(this.label20);
             this.Date3_GroupBox.Controls.Add(this.StartDate3_DateTimePicker);
-            this.Date3_GroupBox.Location = new System.Drawing.Point(306, 11);
+            this.Date3_GroupBox.Location = new System.Drawing.Point(364, 11);
             this.Date3_GroupBox.Name = "Date3_GroupBox";
             this.Date3_GroupBox.Size = new System.Drawing.Size(311, 42);
             this.Date3_GroupBox.TabIndex = 98;
@@ -631,11 +651,11 @@ namespace ElectricalDevicesCW.Forms
             this.ValueSearch3_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ValueSearch3_ComboBox.FormattingEnabled = true;
             this.ValueSearch3_ComboBox.Items.AddRange(new object[] {
-            "Тип",
-            "Производитель",
-            "Страна производства",
-            "Поставщик"});
-            this.ValueSearch3_ComboBox.Location = new System.Drawing.Point(64, 26);
+            "type",
+            "manufacturer",
+            "country",
+            "supplier"});
+            this.ValueSearch3_ComboBox.Location = new System.Drawing.Point(122, 26);
             this.ValueSearch3_ComboBox.Name = "ValueSearch3_ComboBox";
             this.ValueSearch3_ComboBox.Size = new System.Drawing.Size(120, 21);
             this.ValueSearch3_ComboBox.TabIndex = 86;
@@ -645,7 +665,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.ParamSearch3_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ParamSearch3_ComboBox.FormattingEnabled = true;
-            this.ParamSearch3_ComboBox.Location = new System.Drawing.Point(190, 26);
+            this.ParamSearch3_ComboBox.Location = new System.Drawing.Point(248, 26);
             this.ParamSearch3_ComboBox.Name = "ParamSearch3_ComboBox";
             this.ParamSearch3_ComboBox.Size = new System.Drawing.Size(112, 21);
             this.ParamSearch3_ComboBox.TabIndex = 87;
@@ -658,7 +678,7 @@ namespace ElectricalDevicesCW.Forms
             this.Value3_GroupBox.Controls.Add(this.EndValue3_TextBox);
             this.Value3_GroupBox.Controls.Add(this.label21);
             this.Value3_GroupBox.Controls.Add(this.label22);
-            this.Value3_GroupBox.Location = new System.Drawing.Point(312, 9);
+            this.Value3_GroupBox.Location = new System.Drawing.Point(370, 9);
             this.Value3_GroupBox.Name = "Value3_GroupBox";
             this.Value3_GroupBox.Size = new System.Drawing.Size(305, 42);
             this.Value3_GroupBox.TabIndex = 97;
@@ -706,23 +726,26 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Search2_GroupBox
             // 
+            this.Search2_GroupBox.Controls.Add(this.label25);
             this.Search2_GroupBox.Controls.Add(this.SubSearch2_Button);
             this.Search2_GroupBox.Controls.Add(this.Date2_GroupBox);
             this.Search2_GroupBox.Controls.Add(this.AddSearch2_Button);
+            this.Search2_GroupBox.Controls.Add(this.All2_CheckBox);
             this.Search2_GroupBox.Controls.Add(this.ValueSearch2_ComboBox);
+            this.Search2_GroupBox.Controls.Add(this.Part2_CheckBox);
             this.Search2_GroupBox.Controls.Add(this.ParamSearch2_ComboBox);
             this.Search2_GroupBox.Controls.Add(this.Value2_GroupBox);
-            this.Search2_GroupBox.Location = new System.Drawing.Point(6, 77);
+            this.Search2_GroupBox.Location = new System.Drawing.Point(10, 101);
             this.Search2_GroupBox.Name = "Search2_GroupBox";
-            this.Search2_GroupBox.Size = new System.Drawing.Size(625, 59);
+            this.Search2_GroupBox.Size = new System.Drawing.Size(685, 59);
             this.Search2_GroupBox.TabIndex = 101;
             this.Search2_GroupBox.TabStop = false;
             // 
             // SubSearch2_Button
             // 
-            this.SubSearch2_Button.Location = new System.Drawing.Point(33, 25);
+            this.SubSearch2_Button.Location = new System.Drawing.Point(35, 25);
             this.SubSearch2_Button.Name = "SubSearch2_Button";
-            this.SubSearch2_Button.Size = new System.Drawing.Size(27, 23);
+            this.SubSearch2_Button.Size = new System.Drawing.Size(25, 21);
             this.SubSearch2_Button.TabIndex = 100;
             this.SubSearch2_Button.Text = "-";
             this.SubSearch2_Button.UseVisualStyleBackColor = true;
@@ -735,7 +758,7 @@ namespace ElectricalDevicesCW.Forms
             this.Date2_GroupBox.Controls.Add(this.label13);
             this.Date2_GroupBox.Controls.Add(this.label16);
             this.Date2_GroupBox.Controls.Add(this.StartDate2_DateTimePicker);
-            this.Date2_GroupBox.Location = new System.Drawing.Point(306, 11);
+            this.Date2_GroupBox.Location = new System.Drawing.Point(365, 11);
             this.Date2_GroupBox.Name = "Date2_GroupBox";
             this.Date2_GroupBox.Size = new System.Drawing.Size(311, 42);
             this.Date2_GroupBox.TabIndex = 98;
@@ -785,7 +808,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.AddSearch2_Button.Location = new System.Drawing.Point(6, 25);
             this.AddSearch2_Button.Name = "AddSearch2_Button";
-            this.AddSearch2_Button.Size = new System.Drawing.Size(25, 23);
+            this.AddSearch2_Button.Size = new System.Drawing.Size(25, 21);
             this.AddSearch2_Button.TabIndex = 99;
             this.AddSearch2_Button.Text = "+";
             this.AddSearch2_Button.UseVisualStyleBackColor = true;
@@ -796,11 +819,11 @@ namespace ElectricalDevicesCW.Forms
             this.ValueSearch2_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ValueSearch2_ComboBox.FormattingEnabled = true;
             this.ValueSearch2_ComboBox.Items.AddRange(new object[] {
-            "Тип",
-            "Производитель",
-            "Страна производства",
-            "Поставщик"});
-            this.ValueSearch2_ComboBox.Location = new System.Drawing.Point(64, 26);
+            "type",
+            "manufacturer",
+            "country",
+            "supplier"});
+            this.ValueSearch2_ComboBox.Location = new System.Drawing.Point(123, 26);
             this.ValueSearch2_ComboBox.Name = "ValueSearch2_ComboBox";
             this.ValueSearch2_ComboBox.Size = new System.Drawing.Size(120, 21);
             this.ValueSearch2_ComboBox.TabIndex = 86;
@@ -810,7 +833,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.ParamSearch2_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ParamSearch2_ComboBox.FormattingEnabled = true;
-            this.ParamSearch2_ComboBox.Location = new System.Drawing.Point(190, 26);
+            this.ParamSearch2_ComboBox.Location = new System.Drawing.Point(249, 26);
             this.ParamSearch2_ComboBox.Name = "ParamSearch2_ComboBox";
             this.ParamSearch2_ComboBox.Size = new System.Drawing.Size(112, 21);
             this.ParamSearch2_ComboBox.TabIndex = 87;
@@ -823,7 +846,7 @@ namespace ElectricalDevicesCW.Forms
             this.Value2_GroupBox.Controls.Add(this.EndValue2_TextBox);
             this.Value2_GroupBox.Controls.Add(this.label17);
             this.Value2_GroupBox.Controls.Add(this.label18);
-            this.Value2_GroupBox.Location = new System.Drawing.Point(312, 9);
+            this.Value2_GroupBox.Location = new System.Drawing.Point(371, 9);
             this.Value2_GroupBox.Name = "Value2_GroupBox";
             this.Value2_GroupBox.Size = new System.Drawing.Size(305, 42);
             this.Value2_GroupBox.TabIndex = 97;
@@ -871,9 +894,9 @@ namespace ElectricalDevicesCW.Forms
             // 
             // ResetSearch_Button
             // 
-            this.ResetSearch_Button.Location = new System.Drawing.Point(555, 208);
+            this.ResetSearch_Button.Location = new System.Drawing.Point(645, 16);
             this.ResetSearch_Button.Name = "ResetSearch_Button";
-            this.ResetSearch_Button.Size = new System.Drawing.Size(76, 23);
+            this.ResetSearch_Button.Size = new System.Drawing.Size(51, 23);
             this.ResetSearch_Button.TabIndex = 88;
             this.ResetSearch_Button.Text = "Сброс";
             this.ResetSearch_Button.UseVisualStyleBackColor = true;
@@ -881,7 +904,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Search_Button
             // 
-            this.Search_Button.Location = new System.Drawing.Point(473, 208);
+            this.Search_Button.Location = new System.Drawing.Point(563, 16);
             this.Search_Button.Name = "Search_Button";
             this.Search_Button.Size = new System.Drawing.Size(76, 23);
             this.Search_Button.TabIndex = 86;
@@ -891,16 +914,19 @@ namespace ElectricalDevicesCW.Forms
             // 
             // Search1_GroupBox
             // 
+            this.Search1_GroupBox.Controls.Add(this.label23);
             this.Search1_GroupBox.Controls.Add(this.Date_GroupBox);
             this.Search1_GroupBox.Controls.Add(this.AddSearch_Button);
+            this.Search1_GroupBox.Controls.Add(this.All1_CheckBox);
+            this.Search1_GroupBox.Controls.Add(this.Part1_CheckBox);
             this.Search1_GroupBox.Controls.Add(this.ValueSearch_ComboBox);
             this.Search1_GroupBox.Controls.Add(this.ParamSearch_ComboBox);
             this.Search1_GroupBox.Controls.Add(this.Value_GroupBox);
             this.Search1_GroupBox.Controls.Add(this.isDefected_RadioButton);
             this.Search1_GroupBox.Controls.Add(this.NotDefected_RadioButton);
-            this.Search1_GroupBox.Location = new System.Drawing.Point(6, 12);
+            this.Search1_GroupBox.Location = new System.Drawing.Point(10, 36);
             this.Search1_GroupBox.Name = "Search1_GroupBox";
-            this.Search1_GroupBox.Size = new System.Drawing.Size(625, 59);
+            this.Search1_GroupBox.Size = new System.Drawing.Size(685, 59);
             this.Search1_GroupBox.TabIndex = 100;
             this.Search1_GroupBox.TabStop = false;
             // 
@@ -911,34 +937,12 @@ namespace ElectricalDevicesCW.Forms
             this.Date_GroupBox.Controls.Add(this.label14);
             this.Date_GroupBox.Controls.Add(this.label15);
             this.Date_GroupBox.Controls.Add(this.StartDate_DateTimePicker);
-            this.Date_GroupBox.Location = new System.Drawing.Point(306, 11);
+            this.Date_GroupBox.Location = new System.Drawing.Point(365, 11);
             this.Date_GroupBox.Name = "Date_GroupBox";
             this.Date_GroupBox.Size = new System.Drawing.Size(311, 42);
             this.Date_GroupBox.TabIndex = 98;
             this.Date_GroupBox.TabStop = false;
             this.Date_GroupBox.Text = "Дата";
-            // 
-            // isDefected_RadioButton
-            // 
-            this.isDefected_RadioButton.AutoSize = true;
-            this.isDefected_RadioButton.Location = new System.Drawing.Point(494, 28);
-            this.isDefected_RadioButton.Name = "isDefected_RadioButton";
-            this.isDefected_RadioButton.Size = new System.Drawing.Size(83, 17);
-            this.isDefected_RadioButton.TabIndex = 100;
-            this.isDefected_RadioButton.TabStop = true;
-            this.isDefected_RadioButton.Text = "Дефектное";
-            this.isDefected_RadioButton.UseVisualStyleBackColor = true;
-            // 
-            // NotDefected_RadioButton
-            // 
-            this.NotDefected_RadioButton.AutoSize = true;
-            this.NotDefected_RadioButton.Location = new System.Drawing.Point(365, 28);
-            this.NotDefected_RadioButton.Name = "NotDefected_RadioButton";
-            this.NotDefected_RadioButton.Size = new System.Drawing.Size(81, 17);
-            this.NotDefected_RadioButton.TabIndex = 99;
-            this.NotDefected_RadioButton.TabStop = true;
-            this.NotDefected_RadioButton.Text = "Исправное";
-            this.NotDefected_RadioButton.UseVisualStyleBackColor = true;
             // 
             // Date_DateTimePicker
             // 
@@ -982,9 +986,9 @@ namespace ElectricalDevicesCW.Forms
             // 
             // AddSearch_Button
             // 
-            this.AddSearch_Button.Location = new System.Drawing.Point(6, 25);
+            this.AddSearch_Button.Location = new System.Drawing.Point(6, 26);
             this.AddSearch_Button.Name = "AddSearch_Button";
-            this.AddSearch_Button.Size = new System.Drawing.Size(54, 23);
+            this.AddSearch_Button.Size = new System.Drawing.Size(54, 21);
             this.AddSearch_Button.TabIndex = 99;
             this.AddSearch_Button.Text = "+";
             this.AddSearch_Button.UseVisualStyleBackColor = true;
@@ -995,16 +999,17 @@ namespace ElectricalDevicesCW.Forms
             this.ValueSearch_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ValueSearch_ComboBox.FormattingEnabled = true;
             this.ValueSearch_ComboBox.Items.AddRange(new object[] {
-            "Стоимость",
-            "Вес",
-            "Дата производства",
-            "Дата продажи",
-            "Брак",
-            "Тип",
-            "Производитель",
-            "Страна производства",
-            "Поставщик"});
-            this.ValueSearch_ComboBox.Location = new System.Drawing.Point(64, 26);
+            "price",
+            "weight",
+            "manufacture_date",
+            "order_date",
+            "defected",
+            "type",
+            "manufacturer",
+            "country",
+            "supplier",
+            "quantity"});
+            this.ValueSearch_ComboBox.Location = new System.Drawing.Point(123, 26);
             this.ValueSearch_ComboBox.Name = "ValueSearch_ComboBox";
             this.ValueSearch_ComboBox.Size = new System.Drawing.Size(120, 21);
             this.ValueSearch_ComboBox.TabIndex = 86;
@@ -1014,7 +1019,7 @@ namespace ElectricalDevicesCW.Forms
             // 
             this.ParamSearch_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ParamSearch_ComboBox.FormattingEnabled = true;
-            this.ParamSearch_ComboBox.Location = new System.Drawing.Point(190, 26);
+            this.ParamSearch_ComboBox.Location = new System.Drawing.Point(249, 26);
             this.ParamSearch_ComboBox.Name = "ParamSearch_ComboBox";
             this.ParamSearch_ComboBox.Size = new System.Drawing.Size(112, 21);
             this.ParamSearch_ComboBox.TabIndex = 87;
@@ -1027,7 +1032,7 @@ namespace ElectricalDevicesCW.Forms
             this.Value_GroupBox.Controls.Add(this.EndValue_TextBox);
             this.Value_GroupBox.Controls.Add(this.label10);
             this.Value_GroupBox.Controls.Add(this.label12);
-            this.Value_GroupBox.Location = new System.Drawing.Point(312, 11);
+            this.Value_GroupBox.Location = new System.Drawing.Point(371, 11);
             this.Value_GroupBox.Name = "Value_GroupBox";
             this.Value_GroupBox.Size = new System.Drawing.Size(305, 42);
             this.Value_GroupBox.TabIndex = 97;
@@ -1073,60 +1078,199 @@ namespace ElectricalDevicesCW.Forms
             this.label12.TabIndex = 94;
             this.label12.Text = "до:";
             // 
-            // groupBox4
+            // isDefected_RadioButton
             // 
-            this.groupBox4.Controls.Add(this.InStock_RadioButton);
-            this.groupBox4.Controls.Add(this.Saled_RadioButton);
-            this.groupBox4.Controls.Add(this.All_RadioButton);
-            this.groupBox4.Location = new System.Drawing.Point(263, 201);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(204, 30);
-            this.groupBox4.TabIndex = 103;
-            this.groupBox4.TabStop = false;
+            this.isDefected_RadioButton.AutoSize = true;
+            this.isDefected_RadioButton.Location = new System.Drawing.Point(553, 28);
+            this.isDefected_RadioButton.Name = "isDefected_RadioButton";
+            this.isDefected_RadioButton.Size = new System.Drawing.Size(83, 17);
+            this.isDefected_RadioButton.TabIndex = 100;
+            this.isDefected_RadioButton.TabStop = true;
+            this.isDefected_RadioButton.Text = "Дефектное";
+            this.isDefected_RadioButton.UseVisualStyleBackColor = true;
             // 
-            // All_RadioButton
+            // NotDefected_RadioButton
             // 
-            this.All_RadioButton.AutoSize = true;
-            this.All_RadioButton.Location = new System.Drawing.Point(4, 9);
-            this.All_RadioButton.Name = "All_RadioButton";
-            this.All_RadioButton.Size = new System.Drawing.Size(54, 17);
-            this.All_RadioButton.TabIndex = 0;
-            this.All_RadioButton.TabStop = true;
-            this.All_RadioButton.Text = "всего";
-            this.All_RadioButton.UseVisualStyleBackColor = true;
+            this.NotDefected_RadioButton.AutoSize = true;
+            this.NotDefected_RadioButton.Location = new System.Drawing.Point(424, 28);
+            this.NotDefected_RadioButton.Name = "NotDefected_RadioButton";
+            this.NotDefected_RadioButton.Size = new System.Drawing.Size(81, 17);
+            this.NotDefected_RadioButton.TabIndex = 99;
+            this.NotDefected_RadioButton.TabStop = true;
+            this.NotDefected_RadioButton.Text = "Исправное";
+            this.NotDefected_RadioButton.UseVisualStyleBackColor = true;
             // 
-            // Saled_RadioButton
+            // UpPartFraction_ComboBox
             // 
-            this.Saled_RadioButton.AutoSize = true;
-            this.Saled_RadioButton.Location = new System.Drawing.Point(71, 9);
-            this.Saled_RadioButton.Name = "Saled_RadioButton";
-            this.Saled_RadioButton.Size = new System.Drawing.Size(67, 17);
-            this.Saled_RadioButton.TabIndex = 1;
-            this.Saled_RadioButton.TabStop = true;
-            this.Saled_RadioButton.Text = "продано";
-            this.Saled_RadioButton.UseVisualStyleBackColor = true;
+            this.UpPartFraction_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.UpPartFraction_ComboBox.FormattingEnabled = true;
+            this.UpPartFraction_ComboBox.Items.AddRange(new object[] {
+            "везде",
+            "в продано",
+            "на складе",
+            "в резервах"});
+            this.UpPartFraction_ComboBox.Location = new System.Drawing.Point(66, 16);
+            this.UpPartFraction_ComboBox.Name = "UpPartFraction_ComboBox";
+            this.UpPartFraction_ComboBox.Size = new System.Drawing.Size(133, 21);
+            this.UpPartFraction_ComboBox.TabIndex = 101;
             // 
-            // InStock_RadioButton
+            // DownPartFraction_ComboBox
             // 
-            this.InStock_RadioButton.AutoSize = true;
-            this.InStock_RadioButton.Location = new System.Drawing.Point(146, 9);
-            this.InStock_RadioButton.Name = "InStock_RadioButton";
-            this.InStock_RadioButton.Size = new System.Drawing.Size(55, 17);
-            this.InStock_RadioButton.TabIndex = 2;
-            this.InStock_RadioButton.TabStop = true;
-            this.InStock_RadioButton.Text = "склад";
-            this.InStock_RadioButton.UseVisualStyleBackColor = true;
+            this.DownPartFraction_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DownPartFraction_ComboBox.FormattingEnabled = true;
+            this.DownPartFraction_ComboBox.Items.AddRange(new object[] {
+            "всего",
+            "проданного",
+            "склада",
+            "резервов"});
+            this.DownPartFraction_ComboBox.Location = new System.Drawing.Point(259, 16);
+            this.DownPartFraction_ComboBox.Name = "DownPartFraction_ComboBox";
+            this.DownPartFraction_ComboBox.Size = new System.Drawing.Size(173, 21);
+            this.DownPartFraction_ComboBox.TabIndex = 103;
+            // 
+            // Part1_CheckBox
+            // 
+            this.Part1_CheckBox.AutoSize = true;
+            this.Part1_CheckBox.Location = new System.Drawing.Point(71, 31);
+            this.Part1_CheckBox.Name = "Part1_CheckBox";
+            this.Part1_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.Part1_CheckBox.TabIndex = 101;
+            this.Part1_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // All1_CheckBox
+            // 
+            this.All1_CheckBox.AutoSize = true;
+            this.All1_CheckBox.Location = new System.Drawing.Point(99, 31);
+            this.All1_CheckBox.Name = "All1_CheckBox";
+            this.All1_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.All1_CheckBox.TabIndex = 102;
+            this.All1_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // All2_CheckBox
+            // 
+            this.All2_CheckBox.AutoSize = true;
+            this.All2_CheckBox.Location = new System.Drawing.Point(99, 30);
+            this.All2_CheckBox.Name = "All2_CheckBox";
+            this.All2_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.All2_CheckBox.TabIndex = 107;
+            this.All2_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // Part2_CheckBox
+            // 
+            this.Part2_CheckBox.AutoSize = true;
+            this.Part2_CheckBox.Location = new System.Drawing.Point(71, 30);
+            this.Part2_CheckBox.Name = "Part2_CheckBox";
+            this.Part2_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.Part2_CheckBox.TabIndex = 106;
+            this.Part2_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // All3_CheckBox
+            // 
+            this.All3_CheckBox.AutoSize = true;
+            this.All3_CheckBox.Location = new System.Drawing.Point(99, 30);
+            this.All3_CheckBox.Name = "All3_CheckBox";
+            this.All3_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.All3_CheckBox.TabIndex = 110;
+            this.All3_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // Part3_CheckBox
+            // 
+            this.Part3_CheckBox.AutoSize = true;
+            this.Part3_CheckBox.Location = new System.Drawing.Point(71, 30);
+            this.Part3_CheckBox.Name = "Part3_CheckBox";
+            this.Part3_CheckBox.Size = new System.Drawing.Size(15, 14);
+            this.Part3_CheckBox.TabIndex = 109;
+            this.Part3_CheckBox.UseVisualStyleBackColor = true;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label23.Location = new System.Drawing.Point(85, 28);
+            this.label23.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(13, 20);
+            this.label23.TabIndex = 105;
+            this.label23.Text = "/";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label25.Location = new System.Drawing.Point(85, 27);
+            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(13, 20);
+            this.label25.TabIndex = 106;
+            this.label25.Text = "/";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label26.Location = new System.Drawing.Point(85, 26);
+            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(13, 20);
+            this.label26.TabIndex = 106;
+            this.label26.Text = "/";
+            // 
+            // CmdVisible_Button
+            // 
+            this.CmdVisible_Button.Location = new System.Drawing.Point(528, 15);
+            this.CmdVisible_Button.Name = "CmdVisible_Button";
+            this.CmdVisible_Button.Size = new System.Drawing.Size(29, 23);
+            this.CmdVisible_Button.TabIndex = 105;
+            this.CmdVisible_Button.Text = "?";
+            this.CmdVisible_Button.UseVisualStyleBackColor = true;
+            this.CmdVisible_Button.Click += new System.EventHandler(this.CmdVisible_Button_Click);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(13, 19);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(47, 13);
+            this.label27.TabIndex = 88;
+            this.label27.Text = "Искать:";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(205, 19);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(48, 13);
+            this.label24.TabIndex = 106;
+            this.label24.Text = "доля от:";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(228, 124);
+            this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(46, 13);
+            this.label28.TabIndex = 84;
+            this.label28.Text = "Страна:";
+            // 
+            // Country_TextBox
+            // 
+            this.Country_TextBox.Location = new System.Drawing.Point(273, 121);
+            this.Country_TextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.Country_TextBox.Name = "Country_TextBox";
+            this.Country_TextBox.Size = new System.Drawing.Size(134, 20);
+            this.Country_TextBox.TabIndex = 85;
             // 
             // ModelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1077, 515);
+            this.ClientSize = new System.Drawing.Size(1140, 546);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.Models_ListBox);
             this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.Models_ListBox);
             this.Name = "ModelForm";
             this.Text = "ModelForm";
             this.Load += new System.EventHandler(this.ModelForm_Load);
@@ -1139,12 +1283,15 @@ namespace ElectricalDevicesCW.Forms
             ((System.ComponentModel.ISupportInitialize)(this.StockBalance_NumericUpDown)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.Search3_GroupBox.ResumeLayout(false);
+            this.Search3_GroupBox.PerformLayout();
             this.Date3_GroupBox.ResumeLayout(false);
             this.Date3_GroupBox.PerformLayout();
             this.Value3_GroupBox.ResumeLayout(false);
             this.Value3_GroupBox.PerformLayout();
             this.Search2_GroupBox.ResumeLayout(false);
+            this.Search2_GroupBox.PerformLayout();
             this.Date2_GroupBox.ResumeLayout(false);
             this.Date2_GroupBox.PerformLayout();
             this.Value2_GroupBox.ResumeLayout(false);
@@ -1155,8 +1302,6 @@ namespace ElectricalDevicesCW.Forms
             this.Date_GroupBox.PerformLayout();
             this.Value_GroupBox.ResumeLayout(false);
             this.Value_GroupBox.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1250,9 +1395,21 @@ namespace ElectricalDevicesCW.Forms
         private System.Windows.Forms.TextBox Search_TextBox;
         private System.Windows.Forms.RadioButton NotDefected_RadioButton;
         private System.Windows.Forms.RadioButton isDefected_RadioButton;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.RadioButton InStock_RadioButton;
-        private System.Windows.Forms.RadioButton Saled_RadioButton;
-        private System.Windows.Forms.RadioButton All_RadioButton;
+        private System.Windows.Forms.ComboBox DownPartFraction_ComboBox;
+        private System.Windows.Forms.ComboBox UpPartFraction_ComboBox;
+        private System.Windows.Forms.CheckBox All3_CheckBox;
+        private System.Windows.Forms.CheckBox Part3_CheckBox;
+        private System.Windows.Forms.CheckBox All2_CheckBox;
+        private System.Windows.Forms.CheckBox Part2_CheckBox;
+        private System.Windows.Forms.CheckBox All1_CheckBox;
+        private System.Windows.Forms.CheckBox Part1_CheckBox;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Button CmdVisible_Button;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox Country_TextBox;
+        private System.Windows.Forms.Label label28;
     }
 }

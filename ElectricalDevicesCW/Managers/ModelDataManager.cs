@@ -10,7 +10,8 @@ namespace ElectricalDevicesCW.Managers
     public class ModelDataManager
     {
         public DataSet Models { get; set; } = new DataSet();
-        public DataSet Fraction { get; set; } = new DataSet();
+        public DataSet PartFraction { get; set; } = new DataSet();
+        public DataSet AllFraction { get; set; } = new DataSet();
         public DataSet Quantity { get; set; } = new DataSet();
         public DataSet Devices { get; set; } = new DataSet();
         public DataSet Countries { get; set; } = new DataSet();
@@ -35,16 +36,19 @@ namespace ElectricalDevicesCW.Managers
             return "Среднее значение = " + value.ToString();
         }
 
-        public List<string> GetFullDataListModel()
+        public List<string> GetFullDataListModel(string request)
         {
             List<string> models = new List<string>();
+            
             int idModel = 0;           
 
             for (int i = 0; i < Models.Tables[0].Rows.Count; i++)
             {
                 idModel = Models.Tables[0].Rows[i].Field<int>("model_id");
-                int count = ShopDataManager.Instance.GetNumSaleModelToModelOrder(idModel);
-                models.Add($"{idModel}." +
+                if (request == "По дате выпуска")
+                {
+                    DateTime dt = Models.Tables[0].Rows[i].Field<DateTime>("manufacture_date");
+                    models.Add($"{idModel}." +
                            $"{Models.Tables[0].Rows[i].Field<string>("model_name")}." +
                            $"{Models.Tables[0].Rows[i].Field<int>("type_FK")}." +
                            $"{Models.Tables[0].Rows[i].Field<int>("weight")}." +
@@ -53,7 +57,23 @@ namespace ElectricalDevicesCW.Managers
                            $"{Models.Tables[0].Rows[i].Field<int>("manufacturer_FK")}." +
                            $"{Models.Tables[0].Rows[i].Field<int>("supplier_FK")}." +
                            $"{Models.Tables[0].Rows[i].Field<int>("reserved")}." +
-                           $"{count}");
+                           $"{Models.Tables[0].Rows[i].Field<int>("saled")}." +
+                           $"{dt.Day}-{dt.Month}-{dt.Year}");
+                }
+                else
+                {
+                    models.Add($"{idModel}." +
+                           $"{Models.Tables[0].Rows[i].Field<string>("model_name")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("type_FK")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("weight")}." +
+                           $"{(int)(Models.Tables[0].Rows[i].Field<decimal>("price"))}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("stock_balance")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("manufacturer_FK")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("supplier_FK")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("reserved")}." +
+                           $"{Models.Tables[0].Rows[i].Field<int>("saled")}");
+                }
+                
             }
             return models;
         }
@@ -134,12 +154,22 @@ namespace ElectricalDevicesCW.Managers
             return price;
         }
 
-        public int GetFractionModel()
+        public int GetPartFractionModel()
         {
             int fr = 0;
-            for (int i = 0; i < ModelDataManager.Instance.Fraction.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ModelDataManager.Instance.PartFraction.Tables[0].Rows.Count; i++)
             {
-                fr += (int)ModelDataManager.Instance.Fraction.Tables[0].Rows[i].Field<object>("Fraction");
+                fr += (int)ModelDataManager.Instance.PartFraction.Tables[0].Rows[i].Field<object>("PartFraction");
+            }
+            return fr;
+        }
+
+        public int GetAllFractionModel()
+        {
+            int fr = 0;
+            for (int i = 0; i < ModelDataManager.Instance.AllFraction.Tables[0].Rows.Count; i++)
+            {
+                fr += (int)ModelDataManager.Instance.AllFraction.Tables[0].Rows[i].Field<object>("AllFraction");
             }
             return fr;
         }
@@ -191,7 +221,7 @@ namespace ElectricalDevicesCW.Managers
 
         public int GetFullQuantityModel(int idModel)
         {
-            return GetStockBalance(idModel) + ShopDataManager.Instance.GetNumSaleModelToModelOrder(idModel);
+            return GetStockBalance(idModel) + ModelDataManager.Instance.GetNumSaleModelToModel(idModel);
         }
 
         public int GetStockBalance(int idModel)
@@ -207,6 +237,48 @@ namespace ElectricalDevicesCW.Managers
             }
             return stockBalance;
         }
+
+        public int GetSaled(int idModel)
+        {
+            int saled = 0;
+            for (int i = 0; i < Models.Tables[0].Rows.Count; i++)
+            {
+                if (Models.Tables[0].Rows[i].Field<int>("model_id") == idModel)
+                {
+                    saled = Models.Tables[0].Rows[i].Field<int>("saled");
+                    break;
+                }
+            }
+            return saled;
+        }
+
+        public int GetNumSaleModelToModel(int idModel)
+        {
+            int numSaled = 0;
+            for (int i = 0; i < Models.Tables[0].Rows.Count; i++)
+            {
+                if (Models.Tables[0].Rows[i].Field<int>("model_id") == idModel)
+                {
+                    numSaled = Models.Tables[0].Rows[i].Field<int>("saled");
+                    break;
+                }
+            }
+            return numSaled;
+        }
+
+        public int GetNumSaleModelToOrder(int idOrder, int idModel)
+        {
+            int numSaled = 0;
+            for (int i = 0; i < Devices.Tables[0].Rows.Count; i++)
+            {
+                if (Devices.Tables[0].Rows[i].Field<int?>("order_FK") == idOrder && Devices.Tables[0].Rows[i].Field<int>("model_FK") == idModel)
+                {
+                    numSaled++;
+                }
+            }
+            return numSaled;
+        }
+       
 
         public int GetNumReserved(int idModel)
         {
@@ -245,7 +317,21 @@ namespace ElectricalDevicesCW.Managers
             return countries;
         }
 
-
+        public string GetNameCountry(int idManufacturer)
+        {
+            int idCountry = 0;
+            string nameTCountry = "";
+            for (int i = 0; i < Manufacturers.Tables[0].Rows.Count; i++)
+            {
+                if (Manufacturers.Tables[0].Rows[i].Field<int>("manufacturer_id") == idManufacturer)
+                {
+                    idCountry = Manufacturers.Tables[0].Rows[i].Field<int>("country_FK");
+                    nameTCountry = Countries.Tables[0].Rows[idCountry-1].Field<string>("country_name");
+                    break;
+                }
+            }
+            return nameTCountry;
+        }
 
 
         public List<string> GetFullDataListSuppliers()
@@ -355,13 +441,15 @@ namespace ElectricalDevicesCW.Managers
         public List<string> GetFullDataListDevice()
         {
             List<string> devices = new List<string>();
+            DateTime dt;
 
             for (int i = 0; i < Devices.Tables[0].Rows.Count; i++)
             {
+                dt = Devices.Tables[0].Rows[i].Field<DateTime>("manufacture_date");
                 devices.Add($"{Devices.Tables[0].Rows[i].Field<int>("device_id")}." +
                           $"{Devices.Tables[0].Rows[i].Field<int>("model_FK")}." +
                           $"{Devices.Tables[0].Rows[i].Field<string>("serial_number")}." +
-                          $"{Devices.Tables[0].Rows[i].Field<DateTime>("manufacture_date")}." +
+                          $"{dt.Day}-{dt.Month}-{dt.Year}." +
                           $"{Devices.Tables[0].Rows[i].Field<int?>("order_FK")}." +
                            $"{Devices.Tables[0].Rows[i].Field<int?>("basket_FK")}." +
                           $"{Devices.Tables[0].Rows[i].Field<bool>("isDefected")}");

@@ -51,6 +51,8 @@ namespace ElectricalDevicesCW.Forms
             this.Direction_ComboBox = new System.Windows.Forms.ComboBox();
             this.TypeSort_ComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.OrderDate_DateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +60,8 @@ namespace ElectricalDevicesCW.Forms
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.groupBox1.Controls.Add(this.OrderDate_DateTimePicker);
+            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.BasketName_TextBox);
             this.groupBox1.Controls.Add(this.NotDefected_RadioButton);
@@ -95,7 +99,7 @@ namespace ElectricalDevicesCW.Forms
             this.BasketName_TextBox.Location = new System.Drawing.Point(62, 178);
             this.BasketName_TextBox.Margin = new System.Windows.Forms.Padding(2);
             this.BasketName_TextBox.Name = "BasketName_TextBox";
-            this.BasketName_TextBox.Size = new System.Drawing.Size(147, 20);
+            this.BasketName_TextBox.Size = new System.Drawing.Size(133, 20);
             this.BasketName_TextBox.TabIndex = 85;
             // 
             // NotDefected_RadioButton
@@ -134,7 +138,7 @@ namespace ElectricalDevicesCW.Forms
             this.OrderName_TextBox.Location = new System.Drawing.Point(62, 153);
             this.OrderName_TextBox.Margin = new System.Windows.Forms.Padding(2);
             this.OrderName_TextBox.Name = "OrderName_TextBox";
-            this.OrderName_TextBox.Size = new System.Drawing.Size(147, 20);
+            this.OrderName_TextBox.Size = new System.Drawing.Size(133, 20);
             this.OrderName_TextBox.TabIndex = 80;
             // 
             // IsDefected_RadioButton
@@ -290,6 +294,24 @@ namespace ElectricalDevicesCW.Forms
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Сортировка";
             // 
+            // OrderDate_DateTimePicker
+            // 
+            this.OrderDate_DateTimePicker.Enabled = false;
+            this.OrderDate_DateTimePicker.Location = new System.Drawing.Point(239, 153);
+            this.OrderDate_DateTimePicker.Name = "OrderDate_DateTimePicker";
+            this.OrderDate_DateTimePicker.Size = new System.Drawing.Size(167, 20);
+            this.OrderDate_DateTimePicker.TabIndex = 87;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(209, 156);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(21, 13);
+            this.label3.TabIndex = 86;
+            this.label3.Text = "от:";
+            // 
             // DeviceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,5 +356,7 @@ namespace ElectricalDevicesCW.Forms
         private System.Windows.Forms.ComboBox Direction_ComboBox;
         private System.Windows.Forms.ComboBox TypeSort_ComboBox;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.DateTimePicker OrderDate_DateTimePicker;
+        private System.Windows.Forms.Label label3;
     }
 }

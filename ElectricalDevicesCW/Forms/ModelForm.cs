@@ -1,4 +1,5 @@
 ﻿using ElectricalDevicesCW.Managers;
+using ElectricalDevicesCW.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,8 @@ namespace ElectricalDevicesCW.Forms
     public partial class ModelForm : Form
     { 
         DataBaseService dataBaseService = new DataBaseService();
+        SearchService searchService = new SearchService();
+
         int ModelSelectedId = 0;
 
         public ModelForm()
@@ -69,6 +72,7 @@ namespace ElectricalDevicesCW.Forms
                                                             Manufacturer_ComboBox.SelectedIndex + 1,
                                                             Supplier_ComboBox.SelectedIndex + 1,
                                                             (int)Reserved_NumericUpDown.Value,
+                                                            (int)Saled_NumericUpDown.Value,
                                                             ModelSelectedId);
             if (int.TryParse(str, out result) == true)
             {
@@ -93,25 +97,22 @@ namespace ElectricalDevicesCW.Forms
         private async void Sort_Button_Click(object sender, EventArgs e)
         {
             int result = 0;
-            string str = "";
-
-            //if (TypeSort_ComboBox.SelectedItem == null) return;
+            string str = "";            
             string direction = Direction_ComboBox.SelectedItem.ToString();
-
 
             switch (TypeSort_ComboBox.SelectedItem.ToString())
             {
                 case "По дате выпуска":
-                    str = await dataBaseService.SortModelTableAsync("manufacture_date", direction, "devices", "model");
+                    str = await dataBaseService.SortModelTableAsync("manufacture_date", direction, "device", "model");
                     break;
                 case "По поставщику":
-                    str = await dataBaseService.SortModelTableAsync("supplier_name", direction, "suppliers", "supplier");
+                    str = await dataBaseService.SortModelTableAsync("supplier_name", direction, "supplier", "supplier");
                     break;
                 case "По производителю":
-                    str = await dataBaseService.SortModelTableAsync("manufacturer_name", direction, "manufacturers", "manufacturer");
+                    str = await dataBaseService.SortModelTableAsync("manufacturer_name", direction, "manufacturer", "manufacturer");
                     break;
                 case "По стране производства":
-                    str = await dataBaseService.SortModelTableAsync("country_name", direction, "manufacturers", "manufacturer", "countries", "country");
+                    str = await dataBaseService.SortModelTableAsync("country_name", direction, "manufacturer", "manufacturer", "country", "country");
                     break;
                 case "По весу":
                     str = await dataBaseService.SortModelTableAsync("weight", direction);
@@ -128,19 +129,139 @@ namespace ElectricalDevicesCW.Forms
             if (int.TryParse(str, out result) == true)
             {
                 Models_ListBox.Items.Clear();
-                ModelDataManager.Instance.GetFullDataListModel().ForEach(m => Models_ListBox.Items.Add(m));
+                ModelDataManager.Instance.GetFullDataListModel(TypeSort_ComboBox.SelectedItem.ToString()).ForEach(m => Models_ListBox.Items.Add(m));
                 ClearModelInfo();
             }
         }
 
+        private async void Search_Button_Click(object sender, EventArgs e)
+        {
+            int result = 0;
+            string str = "";
+
+            string valueSelect1 = ValueSearch_ComboBox.SelectedItem.ToString();
+            string valueSelect2 = ValueSearch2_ComboBox.SelectedItem.ToString();
+            string valueSelect3 = ValueSearch3_ComboBox.SelectedItem.ToString();
+
+            string paramString1 = ParamSearch_ComboBox.SelectedItem.ToString();
+            string paramString2 = ParamSearch2_ComboBox.SelectedItem.ToString();
+            string paramString3 = ParamSearch3_ComboBox.SelectedItem.ToString();
+
+            string partAreaSearch = UpPartFraction_ComboBox.SelectedItem.ToString();
+            string allAreaSearch = DownPartFraction_ComboBox.SelectedItem.ToString();
+
+            str = await searchService.Search(valueSelect1, paramString1,
+                                             valueSelect2, paramString2,
+                                             valueSelect3, paramString3,
+                                             partAreaSearch, allAreaSearch,
+                                             Part1_CheckBox.Checked, Part2_CheckBox.Checked, Part3_CheckBox.Checked,
+                                             All1_CheckBox.Checked, All2_CheckBox.Checked, All3_CheckBox.Checked,
+                                             Value_TextBox.Text, StartValue_TextBox.Text, EndValue_TextBox.Text,
+                                             Date_DateTimePicker, StartDate_DateTimePicker, EndDate_DateTimePicker,
+                                             isDefected_RadioButton.Checked);
+
+            if (int.TryParse(str, out result) == true)
+            {
+                if (paramString1 == "Среднее")
+                {
+                    Models_ListBox.Items.Clear();
+                    Models_ListBox.Items.Add(ModelDataManager.Instance.GetValueField("Среднее_значение"));
+                }
+                else
+                {
+                    RefreshModelListBox();
+                }
+
+            }
+            else
+            {
+                MessageBox.Show(str);
+                Models_ListBox.Items.Clear();
+            }
+
+            Search_TextBox.Text = "Поиск:" + Environment.NewLine + searchService.CmdSearch;
+            Fraction_TextBox.Text = "Доля:" + Environment.NewLine +
+                                    searchService.CmdPartFraction + Environment.NewLine +
+                                    "От:" + Environment.NewLine + searchService.CmdAllFraction;
+            Quantity_TextBox.Text = "Количество:" + Environment.NewLine + searchService.CmdQuantity;
+        }
+
+        private void ResetSort_Button_Click(object sender, EventArgs e)
+        {
+            RefreshData();
+            TypeSort_ComboBox.SelectedIndex = 0;
+            Direction_ComboBox.SelectedIndex = 0;
+        }
+
+        private void ResetSearch_Button_Click(object sender, EventArgs e)
+        {
+            RefreshData();
+            ValueSearch_ComboBox.SelectedIndex = 0;
+            ValueSearch2_ComboBox.SelectedIndex = 0;
+            ValueSearch3_ComboBox.SelectedIndex = 0;
+
+            ParamSearch_ComboBox.SelectedIndex = 0;
+            ParamSearch2_ComboBox.SelectedIndex = 0;
+            ParamSearch3_ComboBox.SelectedIndex = 0;
+
+            Search2_GroupBox.Visible = false;
+            Search3_GroupBox.Visible = false;
+        }
+
+
+
+        private void AddSearch_Button_Click(object sender, EventArgs e)
+        {
+            if (ParamSearch_ComboBox.SelectedIndex == 0) return;
+            Search2_GroupBox.Visible = true;
+            ValueSearch2_ComboBox.SelectedIndex = 0;
+            Part2_CheckBox.Checked = true;
+        }
+
+        private void AddSearch2_Button_Click(object sender, EventArgs e)
+        {
+            if (ParamSearch2_ComboBox.SelectedIndex == 0) return;
+            Search3_GroupBox.Visible = true;
+            ValueSearch3_ComboBox.SelectedIndex = 0;
+            Part3_CheckBox.Checked = true;
+        }
+
+        private void SubSearch2_Button_Click(object sender, EventArgs e)
+        {
+            ValueSearch2_ComboBox.SelectedIndex = 0;
+            ValueSearch3_ComboBox.SelectedIndex = 0;
+
+            ParamSearch2_ComboBox.SelectedIndex = 0;
+            ParamSearch3_ComboBox.SelectedIndex = 0;
+
+            All2_CheckBox.Checked = false;
+            All3_CheckBox.Checked = false;
+
+            Search2_GroupBox.Visible = false;
+            Search3_GroupBox.Visible = false;
+        }
+
+        private void SubSearch3_Button_Click(object sender, EventArgs e)
+        {
+            ValueSearch3_ComboBox.SelectedIndex = 0;
+            ParamSearch3_ComboBox.SelectedIndex = 0;
+            All3_CheckBox.Checked = false;
+            Search3_GroupBox.Visible = false;
+        }
+
+
+
         public void RefreshModelListBox()
         {
             Models_ListBox.Items.Clear();
-            ModelDataManager.Instance.GetFullDataListModel().ForEach(m => Models_ListBox.Items.Add(m));
+            ModelDataManager.Instance.GetFullDataListModel("").ForEach(m => Models_ListBox.Items.Add(m));
             if (Models_ListBox.Items.Count > 0)
-            { 
-                if(ModelDataManager.Instance.Fraction != null) Models_ListBox.Items.Add($"\n Доля = {ModelDataManager.Instance.GetFractionModel()}%");
-                if(ModelDataManager.Instance.Quantity != null) Models_ListBox.Items.Add($"\n Количество = {ModelDataManager.Instance.GetQuantityModel()}");
+            {
+                //if(ModelDataManager.Instance.PartFraction != null) 
+                int partFraction = ModelDataManager.Instance.GetPartFractionModel();
+                int allFraction = ModelDataManager.Instance.GetAllFractionModel();
+                Models_ListBox.Items.Add($"\n Доля = {partFraction}/{allFraction} = " + (((float)partFraction/allFraction)*100).ToString("#.##")+"%");
+                if (ModelDataManager.Instance.Quantity != null) Models_ListBox.Items.Add($"\n Количество = {ModelDataManager.Instance.GetQuantityModel()}");
             }
             ClearModelInfo();
         }
@@ -161,37 +282,10 @@ namespace ElectricalDevicesCW.Forms
             Supplier_ComboBox.SelectedIndex = int.Parse(str[7])-1;
             Reserved_NumericUpDown.Value = int.Parse(str[8]);
             Saled_NumericUpDown.Value = int.Parse(str[9]);
-        }
+            Country_TextBox.Text = ModelDataManager.Instance.GetNameCountry(int.Parse(str[6]));
+            //ManufactureDate_DateTimePicker.Value = ModelDataManager.Instance.GetDateManufactureDevice(deviceSelectedId);
+        }    
 
-    
-
-        public void ClearModelInfo()
-        {
-            Name_TextBox.Text = "";
-            Type_ComboBox.SelectedIndex = 0;
-            Weight_NumericUpDown.Value = 1;
-            Price_NumericUpDown.Value = 1;
-            StockBalance_NumericUpDown.Value = 0;
-            Reserved_NumericUpDown.Value = 0;
-            Saled_NumericUpDown.Value = 0;
-            Manufacturer_ComboBox.SelectedIndex = 0;
-            Supplier_ComboBox.SelectedIndex = 0;            
-        }
-
-        public async void RefreshData()
-        {
-            int result = 0;
-            string str = "";
-            str = await dataBaseService.ReadModelTableAsync();
-
-            if (int.TryParse(str, out result) == true)
-            {
-                Models_ListBox.Items.Clear();
-                ModelDataManager.Instance.GetFullDataListModel().ForEach(m => Models_ListBox.Items.Add(m));
-                ClearModelInfo();
-            }
-            else MessageBox.Show(str);
-        }
 
         
 
@@ -202,8 +296,8 @@ namespace ElectricalDevicesCW.Forms
             ParamSearch_ComboBox.Items.Add("-");
             switch (ValueSearch_ComboBox.SelectedItem.ToString())
             {
-                case "Стоимость":
-                case "Вес":
+                case "price":
+                case "weight":
                     ParamSearch_ComboBox.Items.Add("Значение");
                     ParamSearch_ComboBox.Items.Add("Максимум");
                     ParamSearch_ComboBox.Items.Add("Минимум");
@@ -214,30 +308,36 @@ namespace ElectricalDevicesCW.Forms
                     ParamSearch_ComboBox.Items.Add("Меньше среднего");
                     ParamSearch_ComboBox.Items.Add("Диапазон");                    
                     break;
-                case "Дата производства":
-                case "Дата продажи":
+                case "manufacture_date":
+                case "order_date":
                     ParamSearch_ComboBox.Items.Add("Значение");
                     ParamSearch_ComboBox.Items.Add("Больше");
                     ParamSearch_ComboBox.Items.Add("Меньше");
                     ParamSearch_ComboBox.Items.Add("Диапазон");                   
                     break;
-                case "Тип":
+                case "type":
                     ModelDataManager.Instance.GetNameListType().ForEach(t => ParamSearch_ComboBox.Items.Add(t));                    
                     break;
-                case "Производитель":
+                case "manufacturer":
                     ModelDataManager.Instance.GetNameListManufacturers().ForEach(m => ParamSearch_ComboBox.Items.Add(m));                    
                     break;
-                case "Страна производства":
+                case "country":
                     ModelDataManager.Instance.GetNameListCountries().ForEach(s => ParamSearch_ComboBox.Items.Add(s));                   
                     break;
-                case "Поставщик":
+                case "supplier":
                     ModelDataManager.Instance.GetNameListSuppliers().ForEach(s => ParamSearch_ComboBox.Items.Add(s));                    
                     break;
-                case "Брак":
+                case "defected":
+                    ParamSearch_ComboBox.Items.Add("Значение");
+                    break;
+                case "quantity":
                     ParamSearch_ComboBox.Items.Add("Значение");                    
-                    //Value_GroupBox.Visible = false;
-                    //Date_GroupBox.Visible = false;
-                    break;         
+                    ParamSearch_ComboBox.Items.Add("Максимум");
+                    ParamSearch_ComboBox.Items.Add("Минимум");
+                    ParamSearch_ComboBox.Items.Add("Больше");
+                    ParamSearch_ComboBox.Items.Add("Меньше");
+                    ParamSearch_ComboBox.Items.Add("Диапазон");
+                    break;
             }
             ParamSearch_ComboBox.SelectedIndex = 0;
         }
@@ -249,16 +349,16 @@ namespace ElectricalDevicesCW.Forms
             ParamSearch2_ComboBox.Items.Add("-");
             switch (ValueSearch2_ComboBox.SelectedItem.ToString())
             {
-                case "Тип":
+                case "type":
                     ModelDataManager.Instance.GetNameListType().ForEach(t => ParamSearch2_ComboBox.Items.Add(t));                    
                     break;
-                case "Производитель":
+                case "manufacturer":
                     ModelDataManager.Instance.GetNameListManufacturers().ForEach(m => ParamSearch2_ComboBox.Items.Add(m));                    
                     break;
-                case "Страна производства":
+                case "country":
                     ModelDataManager.Instance.GetNameListCountries().ForEach(s => ParamSearch2_ComboBox.Items.Add(s));                   
                     break;
-                case "Поставщик":
+                case "supplier":
                     ModelDataManager.Instance.GetNameListSuppliers().ForEach(s => ParamSearch2_ComboBox.Items.Add(s));                    
                     break;
                 default:
@@ -276,16 +376,16 @@ namespace ElectricalDevicesCW.Forms
             ParamSearch3_ComboBox.Items.Add("-");
             switch (ValueSearch3_ComboBox.SelectedItem.ToString())
             {
-                case "Тип":
+                case "type":
                     ModelDataManager.Instance.GetNameListType().ForEach(t => ParamSearch3_ComboBox.Items.Add(t));                    
                     break;
-                case "Производитель":
+                case "manufacturer":
                     ModelDataManager.Instance.GetNameListManufacturers().ForEach(m => ParamSearch3_ComboBox.Items.Add(m));                    
                     break;
-                case "Страна производства":
+                case "country":
                     ModelDataManager.Instance.GetNameListCountries().ForEach(s => ParamSearch3_ComboBox.Items.Add(s));                    
                     break;
-                case "Поставщик":
+                case "supplier":
                     ModelDataManager.Instance.GetNameListSuppliers().ForEach(s => ParamSearch3_ComboBox.Items.Add(s));                   
                     break;
                 default:
@@ -312,554 +412,33 @@ namespace ElectricalDevicesCW.Forms
         }
 
 
-
-        private async void Search_Button_Click(object sender, EventArgs e)
+        public void ClearModelInfo()
         {
-            if (ParamSearch_ComboBox.SelectedItem.ToString() == "-") return;
+            Name_TextBox.Text = "";
+            Type_ComboBox.SelectedIndex = 0;
+            Weight_NumericUpDown.Value = 1;
+            Price_NumericUpDown.Value = 1;
+            StockBalance_NumericUpDown.Value = 0;
+            Reserved_NumericUpDown.Value = 0;
+            Saled_NumericUpDown.Value = 0;
+            Manufacturer_ComboBox.SelectedIndex = 0;
+            Supplier_ComboBox.SelectedIndex = 0;
+        }
 
-            #region подоготовительные действия
+        public async void RefreshData()
+        {
             int result = 0;
-            int resultValue = 0;
-            int startValue = 0;
-            int endValue = 0;
-            string func = "";
-            string sign = "";
-            string startDate = "";
-            string endDate = "";
-            string str = ""; 
-            string innerStr2 = ""; 
-            string Str2 = "";
-            string whereStr2 = "";            
+            string str = "";
+            str = await dataBaseService.ReadModelTableAsync();
 
-            string innerStr3 = "";
-            string Str3 = "";            
-
-            string cmdSearch = "";
-            string cmdFraction = "";
-            string cmdQuantity = "";
-
-            string defected = "";
-            string valueName1 = "";
-            string valueName2 = "";
-
-            string whereStr = "";
-            string andStr = "";
-
-            if (ValueSearch_ComboBox.SelectedItem.ToString() == "Стоимость")
+            if (int.TryParse(str, out result) == true)
             {
-                valueName1 = "price";
-                valueName2 = "weight";
+                Models_ListBox.Items.Clear();
+                ModelDataManager.Instance.GetFullDataListModel("").ForEach(m => Models_ListBox.Items.Add(m));
+                ClearModelInfo();
             }
-            else
-            {
-                valueName1 = "weight";
-                valueName2 = "price";
-            }            
-
-            if (ParamSearch_ComboBox.SelectedItem.ToString() == "Максимум")
-            {
-                func = "max";
-            }
-            else if (ParamSearch_ComboBox.SelectedItem.ToString() == "Минимум")
-            {
-                func = "min";
-            }
-            else if (ParamSearch_ComboBox.SelectedItem.ToString() == "Больше среднего" ||
-                     ParamSearch_ComboBox.SelectedItem.ToString() == "Меньше среднего")
-            {
-                func = "avg";
-            }
-
-            if (ParamSearch_ComboBox.SelectedItem.ToString() == "Больше" || ParamSearch_ComboBox.SelectedItem.ToString() == "Больше среднего")
-            {
-                sign = ">";
-            }
-            else if (ParamSearch_ComboBox.SelectedItem.ToString() == "Значение" || 
-                     ParamSearch_ComboBox.SelectedItem.ToString() == "Максимум" || 
-                     ParamSearch_ComboBox.SelectedItem.ToString() == "Минимум")
-            {
-                sign = "=";
-            }
-            else sign = "<";
-
-            if (ParamSearch2_ComboBox.SelectedItem != null)
-            {
-                if (ParamSearch2_ComboBox.SelectedItem.ToString() != "-" && 
-                    ParamSearch_ComboBox.SelectedItem.ToString() != "-")
-                {
-                    if (ValueSearch2_ComboBox.SelectedItem.ToString() == "Производитель")
-                    {
-                        innerStr2 = "inner join manufacturers on manufacturer_FK = manufacturer_id";
-                        Str2 = $"manufacturer_name = '{ParamSearch2_ComboBox.SelectedItem}'";                        
-                        
-                    }
-                    else if (ValueSearch2_ComboBox.SelectedItem.ToString() == "Страна производства")
-                    {
-                        if (ValueSearch_ComboBox.SelectedItem.ToString() == "Производитель")
-                        {
-                            innerStr2 = "inner join countries on country_FK = country_id";
-                        }
-                        else
-                        {
-                            innerStr2 = "inner join manufacturers on manufacturer_FK = manufacturer_id inner join countries on country_FK = country_id";
-                        }
-                        Str2 = $"country_name = '{ParamSearch2_ComboBox.SelectedItem}'";
-                    }
-                    else if (ValueSearch2_ComboBox.SelectedItem.ToString() == "Поставщик")
-                    {
-                        innerStr2 = "inner join suppliers on supplier_FK = supplier_id";
-                        Str2 = $"supplier_name = '{ParamSearch2_ComboBox.SelectedItem}'";                        
-                        
-                    }
-                    else
-                    {
-                        innerStr2 = "inner join types on type_FK = type_id";
-                        Str2 = $"type_name = '{ParamSearch2_ComboBox.SelectedItem}'";                        
-                        
-                    }
-                }
-            }
-
-            if (ParamSearch3_ComboBox.SelectedItem != null)
-            {
-                if (ParamSearch3_ComboBox.SelectedItem.ToString() != "-" && 
-                    ParamSearch2_ComboBox.SelectedItem.ToString() != "-" && 
-                    ParamSearch_ComboBox.SelectedItem.ToString() != "-")
-                {
-                    if (ValueSearch3_ComboBox.SelectedItem.ToString() == "Производитель" && 
-                        ValueSearch2_ComboBox.SelectedItem.ToString() != "Производитель" &&
-                        ValueSearch_ComboBox.SelectedItem.ToString() != "Производитель")
-                    {
-                        if (ValueSearch_ComboBox.SelectedItem.ToString() != "Страна производства" && ValueSearch2_ComboBox.SelectedItem.ToString() != "Страна производства")
-                        {
-                            innerStr3 = "inner join manufacturers on manufacturer_FK = manufacturer_id";
-                        }
-                        
-                        Str3 = $"manufacturer_name = '{ParamSearch3_ComboBox.SelectedItem}'";                       
-                    }
-
-                    if (ValueSearch3_ComboBox.SelectedItem.ToString() == "Страна производства" && 
-                        ValueSearch2_ComboBox.SelectedItem.ToString() != "Страна производства" &&
-                        ValueSearch_ComboBox.SelectedItem.ToString() != "Страна производства")
-                    {
-                        if(ValueSearch_ComboBox.SelectedItem.ToString() == "Производитель" || ValueSearch2_ComboBox.SelectedItem.ToString() == "Производитель") 
-                        {
-                            innerStr3 = "inner join countries on country_FK = country_id";                            
-                        }
-                        else
-                        {
-                            innerStr3 = "inner join manufacturers on manufacturer_FK = manufacturer_id inner join countries on country_FK = country_id";                            
-                        }                        
-                        Str3 = $"country_name = '{ParamSearch3_ComboBox.SelectedItem}'";
-                    }
-
-                    if (ValueSearch3_ComboBox.SelectedItem.ToString() == "Поставщик" && 
-                        ValueSearch2_ComboBox.SelectedItem.ToString() != "Поставщик" &&
-                        ValueSearch_ComboBox.SelectedItem.ToString() != "Поставщик")
-                    {
-                        innerStr3 = "inner join suppliers on supplier_FK = supplier_id ";
-                        Str3 = $"supplier_name = '{ParamSearch3_ComboBox.SelectedItem}'";                        
-                    }
-
-
-                    if (ValueSearch3_ComboBox.SelectedItem.ToString() == "Тип" &&
-                        ValueSearch2_ComboBox.SelectedItem.ToString() != "Тип" &&
-                        ValueSearch_ComboBox.SelectedItem.ToString() != "Тип")
-                    {
-                        innerStr3 = "inner join types on type_FK = type_id ";
-                        Str3 = $"type_name = '{ParamSearch3_ComboBox.SelectedItem}'";                       
-                    }
-                }
-            }
-
-            if (isDefected_RadioButton.Checked) defected = "1"; else defected = "0";
-
-            if (All_RadioButton.Checked)
-            {
-                if(Str2 != "")
-                {
-                    if (Str3 != "")
-                    {
-                        whereStr = $"where {Str2} and {Str3}";
-                        andStr = $"and {Str2} and {Str3}";
-                    }
-                    else
-                    {
-                        whereStr = $"where {Str2}";
-                        andStr = $"and {Str2}";
-                    }                 
-                }                   
-            }
-            else if (InStock_RadioButton.Checked)
-            {
-                if (Str2 != "")
-                {
-                    if (Str3 != "")
-                    {
-                        whereStr = $"where {Str2} and {Str3} and order_FK is null";
-                        andStr = $"and {Str2} and {Str3} and order_FK is null";
-                    }
-                    else
-                    {
-                        whereStr = $"where {Str2} and order_FK is null";
-                        andStr = $"and {Str2} and order_FK is null";
-                    }
-                }
-                else
-                {
-                    whereStr = $"where order_FK is null";
-                    andStr = $"and order_FK is null";
-                }         
-            }
-            else
-            {
-                if (Str2 != "")
-                {
-                    if (Str3 != "")
-                    {
-                        whereStr = $"where {Str2} and {Str3} and order_FK is not null";
-                        andStr = $"and {Str2} and {Str3} and order_FK is not null";
-                    }
-                    else
-                    {
-                        whereStr = $"where {Str2} and order_FK is not null";
-                        andStr = $"and {Str2} and order_FK is not null";
-                    }
-                }
-                else
-                {
-                    whereStr = $"where order_FK is not null";
-                    andStr = $"and order_FK is not null";
-                }
-            }
-
-            #endregion
-            switch (ValueSearch_ComboBox.SelectedItem.ToString())
-            {
-                case "Стоимость":
-                case "Вес":
-                    switch (ParamSearch_ComboBox.SelectedItem.ToString())
-                    {
-                        case "Значение":
-                        case "Больше":
-                        case "Меньше":
-                            if (int.TryParse(Value_TextBox.Text, out resultValue) == false) return;
-                            cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join devices on model_FK = model_id " +
-                                          $"{innerStr2} {innerStr3} where {valueName1} {sign} {resultValue} {andStr};"; 
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} {sign} {resultValue} {andStr};";
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} {sign} {resultValue} {andStr};";                            
-                            break;
-                        case "Максимум":
-                        case "Минимум":
-                        case "Больше среднего":
-                        case "Меньше среднего":
-                            cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} {sign} (select {func}({valueName1}) from models {innerStr2} {innerStr3} {whereStr}) {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} {sign} (select {func}({valueName1}) from models {innerStr2} {innerStr3} {whereStr}) {andStr};";
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} {sign} (select {func}({valueName1}) from models {innerStr2} {innerStr3} {whereStr}) {andStr};";                                                       
-                            break;                        
-                        case "Среднее":
-                            cmdSearch = $"Select avg({valueName1}) as Среднее_значение from models " +
-                                        $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} {whereStr};";
-                            str = await dataBaseService.SearchModelTableAsync(cmdSearch,"","");
-                            Models_ListBox.Items.Clear();
-                            Models_ListBox.Items.Add(ModelDataManager.Instance.GetValueField("Среднее_значение"));
-                            break;                       
-                        case "Диапазон":                             
-                            if (int.TryParse(StartValue_TextBox.Text, out startValue) == false || int.TryParse(EndValue_TextBox.Text, out endValue) == false) return;
-                            cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +                                          
-                                          $"inner join devices on model_FK = model_id { innerStr2} { innerStr3}" +
-                                          $"where {valueName1} >= {startValue} and {valueName1} <= {endValue} {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                           $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                                                           $"{whereStr})) as Fraction " +
-                                           $"from models " +
-                                           $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                           $"where {valueName1} >= {startValue} and {valueName1} <= {endValue} {andStr};";
-
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where {valueName1} >= {startValue} and {valueName1} <= {endValue} {andStr};";
-                            break;
-                    }
-                    if (ParamSearch_ComboBox.SelectedItem.ToString() != "Среднее")
-                    {
-                        str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                        RefreshModelListBox();
-                    }
-                    break;                
-                case "Дата производства":
-                    switch (ParamSearch_ComboBox.SelectedItem.ToString())
-                    {
-                        case "Значение":
-                        case "Больше":
-                        case "Меньше":
-                            string date = Date_DateTimePicker.Value.Year.ToString() + "-" + Date_DateTimePicker.Value.Month.ToString() + "-" + Date_DateTimePicker.Value.Day.ToString();
-                            cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where manufacture_date {sign} '{date}' {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where manufacture_date {sign} '{date}' {andStr};";
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where manufacture_date {sign} '{date}' {andStr};";                            
-                            break;                        
-                        case "Диапазон":
-                            startDate = StartDate_DateTimePicker.Value.Year.ToString() + "-" + StartDate_DateTimePicker.Value.Month.ToString() + "-" + StartDate_DateTimePicker.Value.Day.ToString();
-                            endDate = EndDate_DateTimePicker.Value.Year.ToString() + "-" + EndDate_DateTimePicker.Value.Month.ToString() + "-" + EndDate_DateTimePicker.Value.Day.ToString();
-                            cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where manufacture_date >= '{startDate}' and manufacture_date <= '{endDate}' {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join devices on model_FK = model_id { innerStr2} { innerStr3} " +
-                                          $"where manufacture_date>='{startDate}' and manufacture_date<='{endDate}' {andStr};";
-
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                          $"where manufacture_date >= '{startDate}' and manufacture_date <= '{endDate}' {andStr};";
-
-                            break;
-                    }
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Дата продажи":
-                    switch (ParamSearch_ComboBox.SelectedItem.ToString())
-                    {
-                        case "Значение":
-                        case "Больше":
-                        case "Меньше":
-                            string date = Date_DateTimePicker.Value.Year.ToString() + "-" + Date_DateTimePicker.Value.Month.ToString() + "-" + Date_DateTimePicker.Value.Day.ToString();
-                            cmdSearch =   $"Select distinct models.model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id {innerStr2} {innerStr3} " +
-                                          $"where order_date {sign} '{date}' {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id " +
-                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                          $"where order_date {sign} '{date}' {andStr};";  //{inStock} - не нужен возможно
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id " +
-                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                          $"where order_date {sign} '{date}' {andStr};";
-
-
-
-                            break;                        
-                        case "Диапазон":
-                            startDate = StartDate_DateTimePicker.Value.Year.ToString() + "-" + StartDate_DateTimePicker.Value.Month.ToString() + "-" + StartDate_DateTimePicker.Value.Day.ToString();
-                            endDate = EndDate_DateTimePicker.Value.Year.ToString() + "-" + EndDate_DateTimePicker.Value.Month.ToString() + "-" + EndDate_DateTimePicker.Value.Day.ToString();
-                            cmdSearch =   $"Select distinct models.model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id {innerStr2} {innerStr3} " +
-                                          $"where order_date >= '{startDate}' and order_date <= '{endDate}' {andStr};";
-                            cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                                                          $"{whereStr})) as Fraction " +
-                                          $"from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id " +
-                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                          $"where order_date >= '{startDate}' and order_date <= '{endDate}' {andStr};";  //{inStock} - не нужен возможно
-                            cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                          $"inner join modelOrder on modelOrder.model_id = models.model_id " +
-                                          $"inner join orders on orders.order_id = modelOrder.order_id " +
-                                          $"inner join devices on model_FK = models.model_id {innerStr2} {innerStr3} " +
-                                          $"where order_date >= '{startDate}' and order_date <= '{endDate}' {andStr};";
-
-                            break;
-                    }
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Брак":
-                    cmdSearch =   $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                  $"inner join devices on model_FK = model_id {innerStr2} {innerStr3} " +
-                                  $"where isDefected = {defected} {andStr};";
-                    cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                            $"inner join devices on model_FK = model_id " +
-                                                                            $"{innerStr2} {innerStr3} {whereStr})) as Fraction from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"{innerStr2} {innerStr3} " +
-                                  $"where isDefected = {defected} {andStr};";
-                    cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"{innerStr2} {innerStr3} where isDefected = {defected} {andStr};";
-
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Тип":
-                    cmdSearch = $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join types on type_FK = type_id {innerStr2} {innerStr3} " +
-                                  $"where type_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                  $"inner join devices on model_FK = model_id " +                                                                           
-                                                                  $"{innerStr2} {innerStr3} {whereStr})) as Fraction from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join types on type_FK = type_id {innerStr2} {innerStr3} " +
-                                  $"where type_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr} {andStr};";
-                    cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join types on type_FK = type_id {innerStr2} {innerStr3} " +
-                                  $"where type_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Производитель":
-                    cmdSearch = $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id {innerStr2} {innerStr3} " +
-                                  $"where manufacturer_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                  $"inner join devices on model_FK = model_id " +
-                                                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id " +
-                                                                  $"{innerStr2} {innerStr3} {whereStr})) as Fraction from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id {innerStr2} {innerStr3} " +
-                                  $"where manufacturer_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id {innerStr2} {innerStr3} " +
-                                  $"where manufacturer_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Поставщик":
-                    cmdSearch = $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join suppliers on supplier_FK = supplier_id {innerStr2} {innerStr3} " +
-                                  $"where supplier_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                           $"inner join devices on model_FK = model_id " +
-                                                                           $"{innerStr2} {innerStr3} {whereStr})) as Fraction from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join suppliers on supplier_FK = supplier_id {innerStr2} {innerStr3} " +
-                                  $"where supplier_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join suppliers on supplier_FK = supplier_id {innerStr2} {innerStr3} " +
-                                  $"where supplier_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-                case "Страна производства":
-                    cmdSearch = $"Select distinct model_id, model_name, type_FK, weight, price, stock_balance, manufacturer_FK, supplier_FK, reserved from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id " +
-                                  $"inner join countries on country_FK = country_id {innerStr2} {innerStr3} " +
-                                  $"where country_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdFraction = $"select (count(device_id)*100/(select count(device_id) from models " +
-                                                                           $"inner join devices on model_FK = model_id " +
-                                                                           $"inner join manufacturers on manufacturer_FK = manufacturer_id " +
-                                                                           $"{innerStr2} {innerStr3} {whereStr})) as Fraction from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id " +
-                                  $"inner join countries on country_FK = country_id {innerStr2} {innerStr3} " +
-                                  $"where country_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-                    cmdQuantity = $"select count(device_id) as Quantity from models " +
-                                  $"inner join devices on model_FK = model_id " +
-                                  $"inner join manufacturers on manufacturer_FK = manufacturer_id " +
-                                  $"inner join countries on country_FK = country_id {innerStr2} {innerStr3} " +
-                                  $"where country_name = '{ParamSearch_ComboBox.SelectedItem}' {andStr};";
-
-                    str = await dataBaseService.SearchModelTableAsync(cmdSearch, cmdFraction, cmdQuantity);
-                    RefreshModelListBox();
-                    break;
-            }
-            if (int.TryParse(str,out result)==false)
-            {
-                MessageBox.Show(str);
-            }
-
-            Search_TextBox.Text = cmdSearch;
-            Fraction_TextBox.Text = cmdFraction;
-            Quantity_TextBox.Text = cmdQuantity;            
+            else MessageBox.Show(str);
         }
-
-
-
-        private void ResetSort_Button_Click(object sender, EventArgs e)
-        {
-            RefreshData();
-            TypeSort_ComboBox.SelectedIndex = 0;
-            Direction_ComboBox.SelectedIndex = 0;
-        }
-
-        private void ResetSearch_Button_Click(object sender, EventArgs e)
-        {
-            RefreshData();
-            ValueSearch_ComboBox.SelectedIndex = 0;
-            ParamSearch_ComboBox.SelectedIndex = 0;
-
-            Search2_GroupBox.Visible = false;
-            Search3_GroupBox.Visible = false;
-            if (ParamSearch2_ComboBox.SelectedIndex != -1) ParamSearch2_ComboBox.SelectedIndex = 0;
-            if (ParamSearch3_ComboBox.SelectedIndex != -1) ParamSearch3_ComboBox.SelectedIndex = 0;
-        }
-
-
-
-        private void AddSearch_Button_Click(object sender, EventArgs e)
-        {
-            if (ParamSearch_ComboBox.SelectedIndex == 0) return;
-            Search2_GroupBox.Visible = true;
-            ValueSearch2_ComboBox.SelectedIndex = 0;
-        }
-
-        private void AddSearch2_Button_Click(object sender, EventArgs e)
-        {
-            if (ParamSearch2_ComboBox.SelectedIndex == 0) return;
-            Search3_GroupBox.Visible = true;
-            ValueSearch3_ComboBox.SelectedIndex = 0;
-        }
-
-        private void SubSearch2_Button_Click(object sender, EventArgs e)
-        {
-            Search2_GroupBox.Visible = false;
-            Search3_GroupBox.Visible = false;
-            ParamSearch2_ComboBox.SelectedIndex = 0;
-            if(ParamSearch3_ComboBox.SelectedIndex != -1) ParamSearch3_ComboBox.SelectedIndex = 0;
-        }
-
-        private void SubSearch3_Button_Click(object sender, EventArgs e)
-        {
-            Search3_GroupBox.Visible = false;
-            ParamSearch3_ComboBox.SelectedIndex = 0;
-        }
-        
 
         public void VisibleControl(ComboBox paramComboBox, ComboBox valueComboBox, GroupBox valueGroupBox, 
                                     GroupBox dateGroupBox, TextBox valueTextBox, DateTimePicker dateTimePicker, 
@@ -872,8 +451,9 @@ namespace ElectricalDevicesCW.Forms
                 case "Меньше":
                     switch (valueComboBox.SelectedItem.ToString())
                     {
-                        case "Стоимость":
-                        case "Вес":
+                        case "price":
+                        case "weight":
+                        case "quantity":
                             valueGroupBox.Visible = true;
                             valueTextBox.Visible = true;
                             dateGroupBox.Visible = false;
@@ -881,15 +461,15 @@ namespace ElectricalDevicesCW.Forms
                             defectedRadioButton.Visible = false;
 
                             break;
-                        case "Дата производства":
-                        case "Дата продажи":
+                        case "manufacture_date":
+                        case "order_date":
                             valueGroupBox.Visible = false;
                             dateGroupBox.Visible = true;
                             dateTimePicker.Visible = true;
                             notDefectedRadioButton.Visible = false;
                             defectedRadioButton.Visible = false;
                             break;
-                        case "Брак":
+                        case "defected":
                             valueGroupBox.Visible = false;
                             dateGroupBox.Visible = false;
                             notDefectedRadioButton.Visible = true;
@@ -901,16 +481,17 @@ namespace ElectricalDevicesCW.Forms
                 case "Диапазон":
                     switch (ValueSearch_ComboBox.SelectedItem.ToString())
                     {
-                        case "Стоимость":
-                        case "Вес":
+                        case "price":
+                        case "weight":
+                        case "quantity":
                             valueGroupBox.Visible = true;
                             valueTextBox.Visible = false;
                             dateGroupBox.Visible = false;
                             notDefectedRadioButton.Visible = false;
                             defectedRadioButton.Visible = false;
                             break;
-                        case "Дата производства":
-                        case "Дата продажи":
+                        case "manufacture_date":
+                        case "order_date":
                             valueGroupBox.Visible = false;
                             dateGroupBox.Visible = true;
                             dateTimePicker.Visible = false;
@@ -981,6 +562,7 @@ namespace ElectricalDevicesCW.Forms
 
             StockBalance_NumericUpDown.Enabled = false;
             Reserved_NumericUpDown.Enabled = false;
+            Saled_NumericUpDown.Enabled = false;
 
             RefreshData();
             ModelDataManager.Instance.GetNameListTypes().ForEach(m => Type_ComboBox.Items.Add(m));
@@ -991,11 +573,12 @@ namespace ElectricalDevicesCW.Forms
 
             ModelDataManager.Instance.GetNameListSuppliers().ForEach(s => Supplier_ComboBox.Items.Add(s));
             Supplier_ComboBox.SelectedIndex = 0;
-            //сортировка
+            
             Direction_ComboBox.SelectedIndex = 0;
             TypeSort_ComboBox.SelectedIndex = 0;
-            //поиск
+            
             ValueSearch_ComboBox.SelectedIndex = 0;
+            Part1_CheckBox.Checked = true;
 
             Search2_GroupBox.Visible = false;
             Search3_GroupBox.Visible = false;
@@ -1003,9 +586,34 @@ namespace ElectricalDevicesCW.Forms
             NotDefected_RadioButton.Visible = false;
             isDefected_RadioButton.Visible = false;
 
-            All_RadioButton.Checked = true;
+            UpPartFraction_ComboBox.SelectedIndex = 0;
+            DownPartFraction_ComboBox.SelectedIndex = 0;
+
+            ValueSearch2_ComboBox.Items.Add("-");
+            ValueSearch2_ComboBox.SelectedIndex = 0;
+
+            ValueSearch3_ComboBox.Items.Add("-");
+            ValueSearch3_ComboBox.SelectedIndex = 0;
+
+            Search_TextBox.Visible = false;
+            Fraction_TextBox.Visible = false;
+            Quantity_TextBox.Visible = false;
         }
 
-    
+        private void CmdVisible_Button_Click(object sender, EventArgs e)
+        {
+            if(Search_TextBox.Visible)
+            {
+                Search_TextBox.Visible = false;
+                Fraction_TextBox.Visible = false;
+                Quantity_TextBox.Visible = false;
+            }
+            else
+            {
+                Search_TextBox.Visible = true;
+                Fraction_TextBox.Visible = true;
+                Quantity_TextBox.Visible = true;
+            }
+        }        
     }
 }

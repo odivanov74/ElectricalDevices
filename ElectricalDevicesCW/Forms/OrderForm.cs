@@ -21,32 +21,18 @@ namespace ElectricalDevicesCW.Forms
             InitializeComponent();
             Client_TextBox.Enabled = false;
             Add_Button.Enabled = false;
+            Del_Button.Enabled = false;
+            Edit_Button.Enabled = false;
         }
 
         private void Add_Button_Click(object sender, EventArgs e)
         {
-            //if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) OrderDataManager_.Instance.GenerateNewOrderName();
-
-            //int result = 0;
-            //string str = await dataBaseService.AddOrderAsync(ShopDataManager.Instance.GenerateNewOrderName(), Order_DateTimePicker.Value);
-            //if (int.TryParse(str, out result) == true)
-            //{
-            //    RefreshData();
-            //}
-            //else MessageBox.Show(str);
+            
         }
 
-        private async void Edit_Button_Click(object sender, EventArgs e)
+        private void Edit_Button_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Name_TextBox.Text) == true) return;
-
-            int result = 0;
-            string str = await dataBaseService.UpdateOrderAsync(Name_TextBox.Text, Order_DateTimePicker.Value, orderSelectedId);
-            if (int.TryParse(str, out result) == true)
-            {
-                RefreshData();
-            }
-            else MessageBox.Show(str);
+            
         }
 
         private async void Del_Button_Click(object sender, EventArgs e)

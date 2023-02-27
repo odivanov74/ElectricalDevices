@@ -47,18 +47,19 @@ namespace ElectricalDevicesCW.Forms
                 IsDefected_RadioButton.Checked = false;
                 NotDefected_RadioButton.Checked = true;
             }
-            //заказ
+
             int result = 0;
-            if(int.TryParse(str[6],out result)==true)
+            if(int.TryParse(str[4],out result)==true)
             {
-                OrderName_TextBox.Text = ShopDataManager.Instance.GetOrderName(result);                
+                OrderName_TextBox.Text = ShopDataManager.Instance.GetOrderName(result);
+                OrderDate_DateTimePicker.Value = ShopDataManager.Instance.GetOrderDate(result);
             }
             else
             {
                 OrderName_TextBox.Text = "";
             }
-            //корзина
-            if (int.TryParse(str[7], out result) == true)
+
+            if (int.TryParse(str[5], out result) == true)
             {
                 BasketName_TextBox.Text = ShopDataManager.Instance.GetOrderName(result);                
             }
@@ -127,18 +128,19 @@ namespace ElectricalDevicesCW.Forms
             {
                 case "Без сортировки":
                     RefreshData();
+                    str = "0";
                     break;
                 case "По индексу модели":
-                    str = await dataBaseService.SelectDeviceTableAsync("model_id", direction, "models", "model");
+                    str = await dataBaseService.SelectDeviceTableAsync("model_id", direction, "model", "model");
                     break;
                 case "По названию модели":
-                    str = await dataBaseService.SelectDeviceTableAsync("model_name", direction, "models", "model");
+                    str = await dataBaseService.SelectDeviceTableAsync("model_name", direction, "model", "model");
                     break;
                 case "По дате производства":
                     str = await dataBaseService.SelectDeviceTableAsync("manufacture_date", direction);
                     break;
                 case "По дате продажи":
-                    str = await dataBaseService.SelectDeviceTableAsync("order_date", direction, "orders", "order");
+                    str = await dataBaseService.SelectDeviceTableAsync("order_date", direction, "order", "order");
                     break;                
             }
 
@@ -148,6 +150,10 @@ namespace ElectricalDevicesCW.Forms
                 Device_ListBox.Items.Clear();
                 ModelDataManager.Instance.GetFullDataListDevice().ForEach(d => Device_ListBox.Items.Add(d));
                 ClearDeviceInfo();
+            }
+            else
+            {
+                MessageBox.Show(str); 
             }
         }
 

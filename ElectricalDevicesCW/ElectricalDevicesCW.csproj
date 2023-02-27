@@ -46,9 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Basket.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="Device.cs" />
     <Compile Include="Forms\BasketForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,7 +117,6 @@
     <Compile Include="Managers\HumanDataManager.cs" />
     <Compile Include="Managers\ShopDataManager.cs" />
     <Compile Include="Model.cs" />
-    <Compile Include="Right.cs" />
     <Compile Include="Services\DataBaseService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,6 +126,7 @@
     <Compile Include="Forms\ShopForm.Designer.cs">
       <DependentUpon>ShopForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\SearchService.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Forms\UsersForm.cs">
       <SubType>Form</SubType>
